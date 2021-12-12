@@ -16,7 +16,6 @@ import { ApiException } from '../../common/exception/api.exception';
 import { UserOauthLoginNonce } from '../../database/mysql/entities/user.oauth.login.nonce.entity';
 import { UserOauthLoginNonceRepository } from '../../database/mysql/repositories/user.oauth.login.nonce.repository';
 import { UpdateResult } from 'typeorm';
-import Api from 'twilio/lib/rest/Api';
 import { UserOauthFacebookRepository } from '../../database/mysql/repositories/user.oauth.facebook.repository';
 import { UserOauthGoogleRepository } from '../../database/mysql/repositories/user.oauth.google.repository';
 import { UserRepository } from '../../database/mysql/repositories/user.repository';
@@ -122,17 +121,14 @@ export class AuthService {
     return user;
   }
 
-  async loginByBasicAuth(
-    user: User,
-    clientIp: string,
-  ): Promise<AuthLoginRspDto> {
+  async loginUser(user: User, clientIp: string): Promise<AuthLoginRspDto> {
     //update login record
     user.lastLoginDate = new Date(Date.now());
     user.lastLoginIp = clientIp;
     await this.userService.saveUser(user);
     //issue jwt token
     const token = await this.signJwtToken(user);
-    return new AuthLoginRspDto(UserAuthType.BASIC, user.uuid, token);
+    return new AuthLoginRspDto(user.authType, user.uuid, token);
   }
 
   async signJwtToken(user: User): Promise<string> {

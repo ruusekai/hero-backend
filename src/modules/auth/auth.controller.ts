@@ -53,12 +53,16 @@ export class AuthController {
 
   @Public()
   @Post('/registration')
-  async register(@Body() request: AuthRegistrationByBasicAuthReqDto) {
+  async register(
+    @Body() request: AuthRegistrationByBasicAuthReqDto,
+    @RequiredHeader('x-forwarded-for') clientIp: string,
+  ) {
     return this.authManager.registerByBasicAuth(
       request.mobile,
       request.password,
       request.token,
       request.email,
+      clientIp,
     );
   }
 
@@ -80,14 +84,20 @@ export class AuthController {
 
   @Public()
   @Post('/oauth/login/google')
-  loginByOauthGoogle(@Body() request: AuthLoginByOauthGoogleReqDto) {
-    return this.authManager.loginByOauthGoogle(request.idToken);
+  loginByOauthGoogle(
+    @Body() request: AuthLoginByOauthGoogleReqDto,
+    @RequiredHeader('x-forwarded-for') clientIp: string,
+  ) {
+    return this.authManager.loginByOauthGoogle(request.idToken, clientIp);
   }
 
   @Public()
   @Post('/oauth/login/facebook')
-  loginByOauthFacebook(@Body() request: AuthLoginByOauthFacebookReqDto) {
-    return this.authManager.loginByOauthFacebook(request.accessToken);
+  loginByOauthFacebook(
+    @Body() request: AuthLoginByOauthFacebookReqDto,
+    @RequiredHeader('x-forwarded-for') clientIp: string,
+  ) {
+    return this.authManager.loginByOauthFacebook(request.accessToken, clientIp);
   }
 
   @Public()

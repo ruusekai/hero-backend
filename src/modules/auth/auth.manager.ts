@@ -85,6 +85,7 @@ export class AuthManager {
     const smsToken: UserRegistrationSmsToken =
       await this.authService.createRegistrationSmsToken(mobile);
     await this.smsUtil.sendSms(smsToken.token);
+    return new AppResponse();
   }
 
   async registrationVerifySmsValidate(mobile: string, token: string) {
@@ -98,6 +99,7 @@ export class AuthManager {
     password: string,
     token: string,
     email: string,
+    clientIp: string,
   ): Promise<AppResponse> {
     //check if the mobile is already registered
     const existingUser: User = await this.authService.findOneUserByMobile(
@@ -124,12 +126,15 @@ export class AuthManager {
       password,
       email,
     );
-    const rsp: UserInfoRspDto = new UserInfoRspDto(user);
+    const rsp: AuthLoginRspDto = await this.authService.loginUser(
+      user,
+      clientIp,
+    );
     return new AppResponse(rsp);
   }
 
   async loginByBasicAuth(user: User, clientIp: string): Promise<AppResponse> {
-    const rsp: AuthLoginRspDto = await this.authService.loginByBasicAuth(
+    const rsp: AuthLoginRspDto = await this.authService.loginUser(
       user,
       clientIp,
     );
@@ -154,7 +159,10 @@ export class AuthManager {
     );
   }
 
-  async loginByOauthGoogle(idToken: string): Promise<AppResponse> {
+  async loginByOauthGoogle(
+    idToken: string,
+    clientIp: string,
+  ): Promise<AppResponse> {
     // https://developers.google.com/identity/sign-in/android/backend-auth
     //check id token with google
     const payload: TokenPayload = await this.googleAuthUtil.verify(idToken);
@@ -196,17 +204,15 @@ export class AuthManager {
       user = await this.authService.createUserByOauthGoogle(payload);
     }
     //login
-    const token: string = await this.authService.signJwtToken(user);
-    const rsp: AuthLoginRspDto = new AuthLoginRspDto(
-      UserAuthType.GOOGLE,
-      user.uuid,
-      token,
+    const rsp: AuthLoginRspDto = await this.authService.loginUser(
+      user,
+      clientIp,
     );
 
     return new AppResponse(rsp);
   }
 
-  async loginByOauthFacebook(accessToken: string) {
+  async loginByOauthFacebook(accessToken: string, clientIp: string) {
     await this.facebookAuthUtil.debugToken(accessToken);
     const payload: FacebookMeRspDto = await this.facebookAuthUtil.me(
       accessToken,
@@ -244,13 +250,10 @@ export class AuthManager {
       user = await this.authService.createUserByOauthFacebook(payload);
     }
     //login
-    const token: string = await this.authService.signJwtToken(user);
-    const rsp: AuthLoginRspDto = new AuthLoginRspDto(
-      UserAuthType.FACEBOOK,
-      user.uuid,
-      token,
+    const rsp: AuthLoginRspDto = await this.authService.loginUser(
+      user,
+      clientIp,
     );
-
     return new AppResponse(rsp);
   }
 }

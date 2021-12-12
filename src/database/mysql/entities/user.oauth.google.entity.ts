@@ -4,7 +4,7 @@ import { BaseEntity } from './base.entity';
 @Entity()
 export class UserOauthGoogle extends BaseEntity {
   constructor(
-    uuid: string,
+    userUuid: string,
     sub: string,
     email: string,
     emailVerified: boolean,
@@ -15,7 +15,7 @@ export class UserOauthGoogle extends BaseEntity {
     locale: string,
   ) {
     super();
-    this.uuid = uuid;
+    this.userUuid = userUuid;
     this.sub = sub;
     this.email = email;
     this.emailVerified = emailVerified;
@@ -25,9 +25,8 @@ export class UserOauthGoogle extends BaseEntity {
     this.familyName = familyName;
     this.locale = locale;
   }
-  @Column({ name: 'uuid', unique: true })
-  @Generated('uuid')
-  uuid: string;
+  @Column({ name: 'user_uuid', unique: true })
+  userUuid: string;
 
   @Column({ name: 'sub', unique: true })
   sub: string;

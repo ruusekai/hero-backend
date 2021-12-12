@@ -32,6 +32,8 @@ export default () => ({
     twilio: {
       ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
       AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+      API_KEY: process.env.TWILIO_API_KEY,
+      API_SECRET: process.env.TWILIO_API_SECRET,
       MESSAGING_SERVICE_SID: process.env.TWILIO_MESSAGING_SERVICE_SID,
     },
   },

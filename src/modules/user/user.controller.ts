@@ -1,20 +1,11 @@
-import {
-  Body,
-  Controller,
-  Request,
-  Post,
-  UseGuards,
-  Get,
-} from '@nestjs/common';
+import { Body, Controller, Request, Post, Get, Logger } from '@nestjs/common';
 import { UserManager } from './user.manager';
-import { AuthGuard } from '@nestjs/passport';
-import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 import { UserCreateKycApplicationReqDto } from './dto/request/user.create.kyc.application.req.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('/user')
 export class UserController {
   constructor(private readonly userManager: UserManager) {}
+  private readonly logger = new Logger(UserController.name);
 
   @Post('/kyc')
   async createKycApplication(@Body() request: UserCreateKycApplicationReqDto) {
@@ -24,9 +15,9 @@ export class UserController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/info')
   getProfile(@Request() req) {
+    this.logger.log(JSON.stringify(req.user));
     return this.userManager.getUserInfoByUuid(req.user.uuid);
   }
 }

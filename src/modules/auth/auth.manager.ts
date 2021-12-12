@@ -101,16 +101,28 @@ export class AuthManager {
     email: string,
     clientIp: string,
   ): Promise<AppResponse> {
-    //check if the mobile is already registered
-    const existingUser: User = await this.authService.findOneUserByMobile(
+    //check if the mobile/email is already registered
+    const existingMobileUser: User = await this.authService.findOneUserByMobile(
       mobile,
     );
-    if (existingUser != null) {
+    if (existingMobileUser != null) {
       //disable all existing tokens
       await this.authService.deactivateAllExistingRegistrationSmsTokenByMobile(
         mobile,
       );
       throw new ApiException(ResponseCode.STATUS_4002_MOBILE_ALREADY_USED);
+    }
+    if (email != null) {
+      const existingEmailUser: User = await this.authService.findOneUserByEmail(
+        email,
+      );
+      if (existingEmailUser != null) {
+        //disable all existing tokens
+        await this.authService.deactivateAllExistingRegistrationSmsTokenByMobile(
+          mobile,
+        );
+        throw new ApiException(ResponseCode.STATUS_4002_MOBILE_ALREADY_USED);
+      }
     }
 
     //check if the sms token is valid, won't deactivate the token

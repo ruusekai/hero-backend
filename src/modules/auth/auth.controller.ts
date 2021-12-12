@@ -77,7 +77,7 @@ export class AuthController {
   }
 
   @Public()
-  @Get('/oauth/:authType')
+  @Get('/oauth/nonce/:authType')
   getOauthLoginNonce(@Param('authType') authType: UserAuthType) {
     return this.authManager.getOauthLoginNonce(authType);
   }

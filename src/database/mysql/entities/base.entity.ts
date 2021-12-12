@@ -11,15 +11,8 @@ export abstract class BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  @Generated('uuid')
-  uuid: string;
-
   @Column({ name: 'is_deleted', default: false })
   isDeleted: boolean;
-
-  @Column({ name: 'status', default: 'NORMAL' })
-  status: string;
 
   @VersionColumn({ name: 'version' })
   version: number;
@@ -29,4 +22,18 @@ export abstract class BaseEntity {
 
   @UpdateDateColumn({ name: 'updated_date' })
   updatedDate: Date;
+
+  @Column({
+    name: 'created_by',
+    type: 'uuid',
+    default: '00000000-0000-0000-0000-000000000000',
+  })
+  createdBy: string;
+
+  @Column({
+    name: 'updated_by',
+    type: 'uuid',
+    default: '00000000-0000-0000-0000-000000000000',
+  })
+  updatedBy: string;
 }

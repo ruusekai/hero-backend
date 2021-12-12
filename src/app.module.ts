@@ -4,21 +4,37 @@ import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { OrmConfig } from './config/ormconfig';
 import { AuthModule } from './modules/auth/auth.module';
-import { LoggerModule } from "nestjs-pino";
+import { LoggerModule } from 'nestjs-pino';
 import { LoggerConfig } from './config/logger.config';
-
+import appConfig from './config/app.config';
+import ormConfig = require('./config/ormconfig');
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { AllExceptionsFilter } from './common/filter/all.exception.filter';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
     LoggerModule.forRoot(new LoggerConfig().config),
-    ConfigModule.forRoot(),
-    TypeOrmModule.forRoot(new OrmConfig().config[0]),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig],
+    }),
+    TypeOrmModule.forRoot(ormConfig[0]),
     AuthModule,
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    AppService,
+  ],
 })
 export class AppModule {}

@@ -4,11 +4,16 @@ import { User } from '../../database/mysql/entities/user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly userRepository: UserRepository,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
-  async findOneUserByUsername(username: string): Promise<User> {
-    return await this.userRepository.findByUsername(username);
+  //user-repo
+  async findOneUserByUuid(uuid: string): Promise<User> {
+    return await this.userRepository.findOneUserByOptionsAndIsDeletedFalse({
+      uuid: uuid,
+    });
+  }
+
+  async saveUser(user: User): Promise<User> {
+    return await this.userRepository.save(user);
   }
 }

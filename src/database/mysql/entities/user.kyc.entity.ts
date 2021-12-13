@@ -1,4 +1,4 @@
-import { Entity, Column, JoinColumn, OneToOne, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { User } from './user.entity';
 import { AdminApprovalStatus } from '../../../common/enum/admin.approval.status';

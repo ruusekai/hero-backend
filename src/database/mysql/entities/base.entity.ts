@@ -1,7 +1,6 @@
 import {
   Column,
   CreateDateColumn,
-  Generated,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   VersionColumn,

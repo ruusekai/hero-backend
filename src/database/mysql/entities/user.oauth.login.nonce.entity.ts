@@ -1,6 +1,5 @@
-import { Entity, Column, Generated } from 'typeorm';
+import { Column, Entity, Generated } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { AuthSmsTokenType } from '../../../modules/auth/enum/auth.sms.token.type';
 import { UserAuthType } from './user.entity';
 
 @Entity()

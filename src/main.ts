@@ -13,7 +13,7 @@ async function bootstrap() {
   const appEnv = configService.get<string>('APP_ENV');
   app.setGlobalPrefix(configService.get<string>('app.globalPrefix'));
   app.useGlobalPipes(new ValidationPipe());
-
+  console.log('run on port: ' + configService.get<number>('app.appPort'));
   await app.listen(configService.get<number>('app.appPort'));
 }
 bootstrap();

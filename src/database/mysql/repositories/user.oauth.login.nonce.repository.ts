@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { EntityRepository, MoreThan, Repository, UpdateResult } from 'typeorm';
+import { EntityRepository, Repository, UpdateResult } from 'typeorm';
 import { ResponseCode } from '../../../common/response/response.code';
 import { ApiException } from '../../../common/exception/api.exception';
 import { UserOauthLoginNonce } from '../entities/user.oauth.login.nonce.entity';
-import { AuthSmsTokenType } from '../../../modules/auth/enum/auth.sms.token.type';
 import { UserAuthType } from '../entities/user.entity';
 
 @EntityRepository(UserOauthLoginNonce)

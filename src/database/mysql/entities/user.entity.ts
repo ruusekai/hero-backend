@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, Generated } from 'typeorm';
+import { Column, Entity, Generated } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { AppLanguage } from '../../../common/enum/app.language';
 

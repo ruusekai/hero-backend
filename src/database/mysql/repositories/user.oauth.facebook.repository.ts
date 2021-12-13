@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { ResponseCode } from '../../../common/response/response.code';
 import { ApiException } from '../../../common/exception/api.exception';
-import { UserOauthFacebook } from '../entities/user.oauth.Facebook.entity';
+import { UserOauthFacebook } from '../entities/user.oauth.facebook.entity';
 
 @EntityRepository(UserOauthFacebook)
 @Injectable()

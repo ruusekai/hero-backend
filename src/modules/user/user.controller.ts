@@ -8,11 +8,21 @@ export class UserController {
   private readonly logger = new Logger(UserController.name);
 
   @Post('/kyc')
-  async createKycApplication(@Body() request: UserCreateKycApplicationReqDto) {
+  async createKycApplication(
+    @Request() req,
+    @Body() request: UserCreateKycApplicationReqDto,
+  ) {
     return await this.userManager.createKycApplication(
-      request.user_uuid,
-      request.image,
+      req.user.uuid,
+      request.fullName,
+      request.fileUuid,
+      request.kycIdNumber,
     );
+  }
+
+  @Get('/kyc')
+  async getLatestKycRecord(@Request() req) {
+    return await this.userManager.getLatestKycRecord(req.user.uuid);
   }
 
   @Get('/info')

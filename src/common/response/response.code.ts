@@ -102,6 +102,13 @@ export class ResponseCode {
     'Please try again later',
   );
 
+  //file error
+  public static readonly STATUS_6001_FILE_SERVICE_ERROR = new ResponseStatus(
+    6001,
+    'File service Error',
+    'Please try again later',
+  );
+
   //system error
   public static readonly STATUS_9999_SYSTEM_ERROR = new ResponseStatus(
     9999,

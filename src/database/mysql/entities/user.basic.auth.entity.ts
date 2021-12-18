@@ -10,7 +10,7 @@ export class UserBasicAuth extends BaseEntity {
     this.username = username;
     this.password = password;
   }
-  @Column({ name: 'user_uuid', unique: true })
+  @Column({ name: 'user_uuid' })
   userUuid: string;
 
   @Column({ name: 'username' })

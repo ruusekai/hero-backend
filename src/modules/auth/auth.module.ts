@@ -28,7 +28,7 @@ import { FacebookAuthUtilModule } from '../../utils/facebook-auth/facebook.auth.
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secretOrPrivateKey: configService.get<string>('jwtConfig.secret'),
+        secret: configService.get<string>('jwtConfig.secret'),
         signOptions: {
           expiresIn: '30d',
         },

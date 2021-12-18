@@ -25,10 +25,10 @@ export class UserOauthGoogle extends BaseEntity {
     this.familyName = familyName;
     this.locale = locale;
   }
-  @Column({ name: 'user_uuid', unique: true })
+  @Column({ name: 'user_uuid' })
   userUuid: string;
 
-  @Column({ name: 'sub', unique: true })
+  @Column({ name: 'sub' })
   sub: string;
 
   @Column({ name: 'email' })

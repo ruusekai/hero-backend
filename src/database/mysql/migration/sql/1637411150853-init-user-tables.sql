@@ -39,7 +39,7 @@ create table if not exists user_basic_auth
     created_by int default 0 not null,
     updated_by int default 0 not null,
     constraint user_basic_auth_user_uuid_fk
-    foreign key (user_uuid) references user (uuid)
+    foreign key (user_uuid) references user (uuid),
     );
 
 
@@ -63,14 +63,14 @@ create table if not exists user_kyc
 (
     id int auto_increment
     primary key,
+    uuid varchar(255) not null,
     user_uuid varchar(255) not null,
-    image_path varchar(1000) not null,
+    file_uuid varchar(255) not null,
     full_name varchar(1000) not null,
-    id_number varchar(255) not null,
+    kyc_id_number varchar(255) not null,
     admin_status varchar(255) not null,
     decline_reason varchar(255),
     admin_remarks varchar(5000),
-
     is_deleted int default 0 not null,
     version int default 1 not null,
     record_state int default 0 not null,
@@ -79,8 +79,10 @@ create table if not exists user_kyc
     created_by int default 0 not null,
     updated_by int default 0 not null,
     constraint user_kyc_user_uuid_fk
-    foreign key (user_uuid) references user (uuid)
-    );
+    foreign key (user_uuid) references user (uuid),
+    constraint user_kyc_uindex
+    unique (uuid)
+);
 
 
 create table if not exists user_oauth_login_nonce
@@ -143,4 +145,46 @@ create table if not exists user_oauth_google
     updated_by int default 0 not null,
     constraint user_oauth_google_user_uuid_fk
     foreign key (user_uuid) references user (uuid)
+);
+
+
+create table if not exists file
+(
+    id int auto_increment
+    primary key,
+    uuid varchar(255) not null,
+    filename varchar(255) not null,
+    full_path varchar(1000) not null,
+    mimetype varchar(255) not null,
+    original_filename varchar(1000) not null,
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    record_state int default 0 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint file_uuid_uindex
+    unique (uuid)
+);
+
+
+
+create table if not exists file_thumbnail
+(
+    id int auto_increment
+    primary key,
+    file_uuid varchar(255) not null,
+    filename varchar(1000) not null,
+    full_path varchar(1000) not null,
+
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    record_state int default 0 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint file_thumbnail_file_uuid_fk
+    foreign key (file_uuid) references file (uuid)
     );

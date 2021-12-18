@@ -7,7 +7,6 @@ import { User, UserAuthType } from '../../database/mysql/entities/user.entity';
 import { UserRegistrationSmsToken } from '../../database/mysql/entities/user.registration.sms.token.entity';
 import { AppResponse } from '../../common/response/app.response';
 import { ResponseCode } from '../../common/response/response.code';
-import { UserInfoRspDto } from './dto/response/user.info.rsp.dto';
 import { AuthLoginRspDto } from './dto/response/auth.login.rsp.dto';
 import { DateUtil } from '../../utils/date/date.util';
 import { ApiException } from '../../common/exception/api.exception';
@@ -17,7 +16,6 @@ import { GoogleAuthUtil } from '../../utils/google-auth/google.auth.util';
 import { TokenPayload } from 'google-auth-library/build/src/auth/loginticket';
 import { UserOauthGoogle } from '../../database/mysql/entities/user.oauth.google.entity';
 import { FacebookAuthUtil } from '../../utils/facebook-auth/facebook.auth.util';
-import { FacebookDebugTokenRspDto } from '../../utils/facebook-auth/dto/response/facebook.debug.token.rsp.dto';
 import { FacebookMeRspDto } from '../../utils/facebook-auth/dto/response/facebook.me.rsp.dto';
 import { UserOauthFacebook } from '../../database/mysql/entities/user.oauth.facebook.entity';
 
@@ -84,7 +82,7 @@ export class AuthManager {
     //create new tokens
     const smsToken: UserRegistrationSmsToken =
       await this.authService.createRegistrationSmsToken(mobile);
-    await this.smsUtil.sendSms(smsToken.token);
+    await this.smsUtil.sendSms(mobile, smsToken.token);
     return new AppResponse();
   }
 
@@ -121,7 +119,7 @@ export class AuthManager {
         await this.authService.deactivateAllExistingRegistrationSmsTokenByMobile(
           mobile,
         );
-        throw new ApiException(ResponseCode.STATUS_4002_MOBILE_ALREADY_USED);
+        throw new ApiException(ResponseCode.STATUS_4001_EMAIL_ALREADY_USED);
       }
     }
 

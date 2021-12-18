@@ -12,6 +12,7 @@ import ormConfig = require('./config/ormconfig');
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filter/all.exception.filter';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     TypeOrmModule.forRoot(ormConfig[0]),
     AuthModule,
     UserModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [

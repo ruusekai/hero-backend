@@ -2,8 +2,11 @@ import { IsNotEmpty } from 'class-validator';
 
 export class UserCreateKycApplicationReqDto {
   @IsNotEmpty()
-  user_uuid: string;
+  fullName: string;
 
   @IsNotEmpty()
-  image: string;
+  fileUuid: string;
+
+  @IsNotEmpty()
+  kycIdNumber: string;
 }

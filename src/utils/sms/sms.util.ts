@@ -25,11 +25,11 @@ export class SmsUtil {
   private readonly client;
   private readonly twilioMessagingServiceSid;
 
-  async sendSms(token: string) {
+  async sendSms(mobile: string, token: string) {
     const message = await this.client.messages.create({
       body: 'testing, your verification code is: ' + token,
       messagingServiceSid: this.twilioMessagingServiceSid,
-      to: '+85294271798',
+      to: '+852' + mobile,
     });
     this.logger.log(message.sid);
   }

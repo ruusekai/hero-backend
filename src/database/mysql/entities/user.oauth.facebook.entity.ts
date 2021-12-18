@@ -15,10 +15,10 @@ export class UserOauthFacebook extends BaseEntity {
     this.email = email;
     this.name = name;
   }
-  @Column({ name: 'user_uuid', unique: true })
+  @Column({ name: 'user_uuid' })
   userUuid: string;
 
-  @Column({ name: 'facebook_id', unique: true })
+  @Column({ name: 'facebook_id' })
   facebookId: string;
 
   @Column({ name: 'email' })

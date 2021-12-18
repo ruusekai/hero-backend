@@ -1,6 +1,7 @@
 export default () => ({
   app: {
     name: 'Hero API',
+    domain: process.env.DOMAIN,
     globalPrefix: 'hero-api',
     appPort: process.env.APP_PORT || 3000,
     paginateLimit: process.env.PAGINATE_LIMIT,
@@ -47,5 +48,8 @@ export default () => ({
       CLIENT_ID: process.env.FACEBOOK_OAUTH_CLIENT_ID,
       CLIENT_SECRET: process.env.FACEBOOK_OAUTH_CLIENT_SECRET,
     },
+  },
+  file: {
+    THUMBNAIL_SIZE_PX: process.env.FILE_THUMBNAIL_SIZE_PX || 300,
   },
 });

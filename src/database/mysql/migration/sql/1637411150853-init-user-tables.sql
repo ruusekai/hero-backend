@@ -43,7 +43,7 @@ create table if not exists user_basic_auth
     );
 
 
-create table if not exists user_registration_sms_token
+create table if not exists user_sms_token
 (
     id int auto_increment
     primary key,
@@ -57,7 +57,7 @@ create table if not exists user_registration_sms_token
     updated_date timestamp default CURRENT_TIMESTAMP not null,
     created_by int default 0 not null,
     updated_by int default 0 not null
-    );
+);
 
 create table if not exists user_kyc
 (
@@ -65,7 +65,8 @@ create table if not exists user_kyc
     primary key,
     uuid varchar(255) not null,
     user_uuid varchar(255) not null,
-    file_uuid varchar(255) not null,
+    kyc_id_file_uuid varchar(255) not null,
+    selfie_file_uuid varchar(255) not null,
     full_name varchar(1000) not null,
     kyc_id_number varchar(255) not null,
     admin_status varchar(255) not null,
@@ -187,4 +188,23 @@ create table if not exists file_thumbnail
     updated_by int default 0 not null,
     constraint file_thumbnail_file_uuid_fk
     foreign key (file_uuid) references file (uuid)
+);
+
+create table if not exists user_profile
+(
+    id int auto_increment
+    primary key,
+    user_uuid varchar(255) not null,
+    icon varchar(1000) null,
+    self_introduction varchar(5000) null,
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    record_state int default 0 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint user_profile_user_uuid_fk
+    foreign key (user_uuid) references user (uuid)
     );
+

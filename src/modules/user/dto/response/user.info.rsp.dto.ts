@@ -3,6 +3,7 @@ import {
   UserAuthType,
 } from '../../../../database/mysql/entities/user.entity';
 import { AppLanguage } from '../../../../common/enum/app.language';
+export class UserBasicInfoDto {}
 
 export class UserInfoRspDto {
   constructor(user: User) {

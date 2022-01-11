@@ -5,7 +5,10 @@ export class UserCreateKycApplicationReqDto {
   fullName: string;
 
   @IsNotEmpty()
-  fileUuid: string;
+  kycIdFileUuid: string;
+
+  @IsNotEmpty()
+  selfieFileUuid: string;
 
   @IsNotEmpty()
   kycIdNumber: string;

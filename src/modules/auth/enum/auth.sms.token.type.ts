@@ -1,4 +1,5 @@
 export enum AuthSmsTokenType {
   REGISTRATION = 'registration',
-  RESET_PASSWORD = 'reset-password',
+  FORGET_PASSWORD = 'forget-password',
+  CHANGE_MOBILE = 'change-mobile',
 }

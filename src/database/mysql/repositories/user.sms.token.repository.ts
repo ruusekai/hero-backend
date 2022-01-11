@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { EntityRepository, MoreThan, Repository } from 'typeorm';
-import { UserRegistrationSmsToken } from '../entities/user.registration.sms.token.entity';
 import { ResponseCode } from '../../../common/response/response.code';
 import { ApiException } from '../../../common/exception/api.exception';
+import { AuthSmsTokenType } from '../../../modules/auth/enum/auth.sms.token.type';
+import { UserSmsToken } from '../entities/user.sms.token.entity';
 
-@EntityRepository(UserRegistrationSmsToken)
+@EntityRepository(UserSmsToken)
 @Injectable()
-export class UserRegistrationSmsTokenRepository extends Repository<UserRegistrationSmsToken> {
+export class UserSmsTokenRepository extends Repository<UserSmsToken> {
   constructor() {
     super();
   }
 
-  async createToken(
-    token: UserRegistrationSmsToken,
-  ): Promise<UserRegistrationSmsToken> {
+  async createToken(token: UserSmsToken): Promise<UserSmsToken> {
     try {
       return await this.save(token);
     } catch (e) {
@@ -21,17 +20,21 @@ export class UserRegistrationSmsTokenRepository extends Repository<UserRegistrat
     }
   }
 
-  async deactivateExistingTokenByMobile(mobile: string) {
+  async deactivateExistingTokenByTypeAndMobile(
+    type: AuthSmsTokenType,
+    mobile: string,
+  ) {
     try {
       return await this.createQueryBuilder()
-        .update(UserRegistrationSmsToken)
+        .update(UserSmsToken)
         .set({
           expiryDate: new Date(Date.now()),
           updatedDate: new Date(Date.now()),
         })
         .where(
-          'mobile= :mobile and expiryDate > current_timestamp and isDeleted = false',
+          'type= :type and mobile= :mobile and expiryDate > current_timestamp and isDeleted = false',
           {
+            type,
             mobile,
           },
         )
@@ -41,17 +44,22 @@ export class UserRegistrationSmsTokenRepository extends Repository<UserRegistrat
     }
   }
 
-  async deactivateOneTokenByMobileAndToken(mobile: string, token: string) {
+  async deactivateOneTokenByTypeAndMobileAndToken(
+    type: string,
+    mobile: string,
+    token: string,
+  ) {
     try {
       return await this.createQueryBuilder()
-        .update(UserRegistrationSmsToken)
+        .update(UserSmsToken)
         .set({
           expiryDate: new Date(Date.now()),
           updatedDate: new Date(Date.now()),
         })
         .where(
-          'mobile= :mobile and token= :token and expiryDate > current_timestamp and isDeleted = false',
+          'type= :type and mobile= :mobile and token= :token and expiryDate > current_timestamp and isDeleted = false',
           {
+            type,
             mobile,
             token,
           },
@@ -62,12 +70,14 @@ export class UserRegistrationSmsTokenRepository extends Repository<UserRegistrat
     }
   }
 
-  async findOneTokenByMobileAndTokenAndIsDeletedFalse(
+  async findOneTokenByTypeAndMobileAndTokenAndIsDeletedFalse(
+    type: AuthSmsTokenType,
     mobile: string,
     token: string,
-  ): Promise<UserRegistrationSmsToken> {
+  ): Promise<UserSmsToken> {
     try {
       return await this.findOne({
+        type: type,
         mobile: mobile,
         token: token,
         isDeleted: false,
@@ -77,13 +87,15 @@ export class UserRegistrationSmsTokenRepository extends Repository<UserRegistrat
     }
   }
 
-  async findTokenByMobileAndCreatedDateMoreThanAndIsDeletedFalseOrderByCreatedDateDesc(
+  async findTokenByTypeAndMobileAndCreatedDateMoreThanAndIsDeletedFalseOrderByCreatedDateDesc(
+    type: AuthSmsTokenType,
     mobile: string,
     createdDate: Date,
-  ): Promise<UserRegistrationSmsToken[]> {
+  ): Promise<UserSmsToken[]> {
     try {
       return await this.find({
         where: {
+          type: type,
           mobile: mobile,
           createdDate: MoreThan(createdDate),
           isDeleted: false,

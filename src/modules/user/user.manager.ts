@@ -4,21 +4,30 @@ import { User } from '../../database/mysql/entities/user.entity';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
 import { AppResponse } from '../../common/response/app.response';
-import { UserInfoRspDto } from '../auth/dto/response/user.info.rsp.dto';
+import { UserInfoRspDto } from './dto/response/user.info.rsp.dto';
 import { UserKyc } from '../../database/mysql/entities/user.kyc.entity';
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
 import { UserKycRspDto } from './dto/response/user.kyc.rsp.dto';
+import { UserPatchUserReqDto } from './dto/request/user.patch.user.req.dto';
+import { AuthService } from '../auth/auth.service';
+import { UserProfile } from '../../database/mysql/entities/user.profile.entity';
+import { UserProfileRspDto } from './dto/response/user.profile.rsp.dto';
+import Api from 'twilio/lib/rest/Api';
 
 @Injectable()
 export class UserManager {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   private readonly logger = new Logger(UserManager.name);
 
   async createKycApplication(
     userUuid: string,
     fullName: string,
-    fileUuid: string,
+    kycIdFileUuid: string,
+    selfieFileUuid: string,
     kycIdNumber: string,
   ): Promise<AppResponse> {
     //check if the user already done kyc
@@ -40,7 +49,8 @@ export class UserManager {
     //if no existing record, allow it to create kyc application
     let newUserKyc: UserKyc = new UserKyc(
       userUuid,
-      fileUuid,
+      kycIdFileUuid,
+      selfieFileUuid,
       fullName,
       kycIdNumber,
       AdminApprovalStatus.PENDING,
@@ -66,5 +76,51 @@ export class UserManager {
     }
     const rsp: UserInfoRspDto = new UserInfoRspDto(user);
     return new AppResponse(rsp);
+  }
+
+  async patchUser(userUuid: string, request: UserPatchUserReqDto) {
+    const user: User = await this.userService.findOneUserByUuid(userUuid);
+    if (user == null) {
+      throw new ApiException(ResponseCode.STATUS_4003_USER_NOT_EXIST);
+    }
+
+    //change mobile, related to auth module
+    if (request.newMobile != null) {
+      if (request.token == null) {
+        throw new ApiException(ResponseCode.STATUS_4004_BAD_REQUEST);
+      }
+      await this.authService.changeMobile(
+        user,
+        request.newMobile,
+        request.token,
+      );
+    }
+    if (request.email != null) {
+      await this.authService.changeEmail(user, request.email);
+    }
+    await this.userService.updateUserProfile(
+      user,
+      request.icon,
+      request.selfIntroduction,
+    );
+    return new AppResponse();
+  }
+
+  async getProfileByUserUuid(userUuid: string): Promise<AppResponse> {
+    const user: User = await this.userService.findOneUserByUuid(userUuid);
+    if (user == null) {
+      throw new ApiException(ResponseCode.STATUS_4003_USER_NOT_EXIST);
+    }
+    const userProfile: UserProfile =
+      await this.userService.findUserProfileByUserUuid(userUuid);
+    const userProfileRspDto: UserProfileRspDto = new UserProfileRspDto(
+      user.uuid,
+      user.isBoss,
+      user.isHero,
+      user.isKyc,
+      userProfile ? userProfile.icon : null,
+      userProfile ? userProfile.selfIntroduction : null,
+    );
+    return new AppResponse(userProfileRspDto);
   }
 }

@@ -1,6 +1,20 @@
-import { Body, Controller, Request, Post, Get, Logger } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Request,
+  Post,
+  Get,
+  Logger,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { UserManager } from './user.manager';
 import { UserCreateKycApplicationReqDto } from './dto/request/user.create.kyc.application.req.dto';
+import { RequiredHeader } from '../../common/decorator/required.header.decorator';
+import { UserPatchUserReqDto } from './dto/request/user.patch.user.req.dto';
+import { ApiException } from '../../common/exception/api.exception';
+import { ResponseCode } from '../../common/response/response.code';
+import { AppResponse } from '../../common/response/app.response';
 
 @Controller('/user')
 export class UserController {
@@ -15,7 +29,8 @@ export class UserController {
     return await this.userManager.createKycApplication(
       req.user.uuid,
       request.fullName,
-      request.fileUuid,
+      request.kycIdFileUuid,
+      request.selfieFileUuid,
       request.kycIdNumber,
     );
   }
@@ -26,8 +41,23 @@ export class UserController {
   }
 
   @Get('/info')
-  getProfile(@Request() req) {
+  getInfo(@Request() req) {
     this.logger.log(JSON.stringify(req.user));
     return this.userManager.getUserInfoByUuid(req.user.uuid);
+  }
+
+  @Patch('')
+  async patchUser(@Request() req, @Body() request: UserPatchUserReqDto) {
+    return this.userManager.patchUser(req.user.uuid, request);
+  }
+
+  @Get('/profile')
+  getSelfProfile(@Request() req) {
+    return this.userManager.getProfileByUserUuid(req.user.uuid);
+  }
+
+  @Get('/profile/:userUuid')
+  getProfile(@Request() req, @Param('userUuid') userUuid: string) {
+    return this.userManager.getProfileByUserUuid(userUuid);
   }
 }

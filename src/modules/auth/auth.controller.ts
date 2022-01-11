@@ -12,14 +12,19 @@ import { UserService } from '../user/user.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { AuthManager } from './auth.manager';
-import { AuthRegistrationVerifySmsResendReqDto } from './dto/request/auth.registration.verify.sms.resend.req.dto';
-import { AuthRegistrationVerifySmsValidateReqDto } from './dto/request/auth.registration.verify.sms.validate.req.dto';
 import { AuthRegistrationByBasicAuthReqDto } from './dto/request/auth.registration.by.basic.auth.req.dto';
 import { UserAuthType } from '../../database/mysql/entities/user.entity';
 import { RequiredHeader } from '../../common/decorator/required.header.decorator';
 import { Public } from '../../common/decorator/public.endpoint.decorator';
 import { AuthLoginByOauthGoogleReqDto } from './dto/request/auth.login.by.oauth.google.req.dto';
 import { AuthLoginByOauthFacebookReqDto } from './dto/request/auth.login.by.oauth.facebook.req.dto';
+import { AuthForgetPasswordReqDto } from './dto/request/auth.forget.password.req.dto';
+import { AuthResetPasswordReqDto } from './dto/request/auth.reset.password.req.dto';
+import { AuthSmsTokenType } from './enum/auth.sms.token.type';
+import { ApiException } from '../../common/exception/api.exception';
+import { ResponseCode } from '../../common/response/response.code';
+import { AuthVerifySmsResendReqDto } from './dto/request/auth.verify.sms.resend.req.dto';
+import { AuthVerifySmsValidateReqDto } from './dto/request/auth.verify.sms.validate.req.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,20 +37,32 @@ export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
   @Public()
-  @Post('/registration/verify-sms/resend')
-  async registrationVerifySmsResend(
-    @Body() request: AuthRegistrationVerifySmsResendReqDto,
+  @Post('/:smsTokenType/verify-sms/resend')
+  async verifySmsResendWithoutLogin(
+    @Param('smsTokenType') smsTokenType: AuthSmsTokenType,
+    @Body() request: AuthVerifySmsResendReqDto,
   ) {
-    return this.authManager.registrationVerifySmsResend(request.mobile);
+    if (smsTokenType === AuthSmsTokenType.REGISTRATION) {
+      return this.authManager.registrationVerifySmsResend(request.mobile);
+    } else if (smsTokenType === AuthSmsTokenType.FORGET_PASSWORD) {
+      return this.authManager.forgetPasswordVerifySmsResend(request.mobile);
+    } else if (smsTokenType === AuthSmsTokenType.CHANGE_MOBILE) {
+      return this.authManager.changeMobileVerifySmsResend(request.mobile);
+    } else {
+      throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
+    }
   }
 
   //wont deactivate the token, just for FE to show checking result
   @Public()
-  @Post('/registration/verify-sms/validate')
+  @Post('/:smsTokenType/verify-sms/validate')
   async registrationVerifySmsValidate(
-    @Body() request: AuthRegistrationVerifySmsValidateReqDto,
+    @Param('smsTokenType') smsTokenType: AuthSmsTokenType,
+    @Body()
+    request: AuthVerifySmsValidateReqDto,
   ) {
-    return this.authManager.registrationVerifySmsValidate(
+    return this.authManager.verifySmsValidate(
+      smsTokenType,
       request.mobile,
       request.token,
     );
@@ -74,6 +91,28 @@ export class AuthController {
     @RequiredHeader('x-forwarded-for') clientIp: string,
   ) {
     return this.authManager.loginByBasicAuth(req.user, clientIp);
+  }
+
+  @Public()
+  @Post('/forget-password')
+  async forgetPassword(
+    @Body() request: AuthForgetPasswordReqDto,
+    @RequiredHeader('x-forwarded-for') clientIp: string,
+  ) {
+    return this.authManager.forgetPassword(
+      request.mobile,
+      request.newPassword,
+      request.token,
+    );
+  }
+
+  @Post('/reset-password')
+  async resetPassword(
+    @Request() req,
+    @Body() request: AuthResetPasswordReqDto,
+    @RequiredHeader('x-forwarded-for') clientIp: string,
+  ) {
+    return this.authManager.resetPassword(req.user.uuid, request.newPassword);
   }
 
   @Public()

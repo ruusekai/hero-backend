@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { SmsUtil } from '../../utils/sms/sms.util';
 import { User, UserAuthType } from '../../database/mysql/entities/user.entity';
-import { UserRegistrationSmsToken } from '../../database/mysql/entities/user.registration.sms.token.entity';
 import { AppResponse } from '../../common/response/app.response';
 import { ResponseCode } from '../../common/response/response.code';
 import { AuthLoginRspDto } from './dto/response/auth.login.rsp.dto';
@@ -18,6 +17,10 @@ import { UserOauthGoogle } from '../../database/mysql/entities/user.oauth.google
 import { FacebookAuthUtil } from '../../utils/facebook-auth/facebook.auth.util';
 import { FacebookMeRspDto } from '../../utils/facebook-auth/dto/response/facebook.me.rsp.dto';
 import { UserOauthFacebook } from '../../database/mysql/entities/user.oauth.facebook.entity';
+import { UserBasicAuth } from '../../database/mysql/entities/user.basic.auth.entity';
+import { AuthSmsTokenType } from './enum/auth.sms.token.type';
+import { UserSmsToken } from '../../database/mysql/entities/user.sms.token.entity';
+import { UserInfoRspDto } from '../user/dto/response/user.info.rsp.dto';
 
 @Injectable()
 export class AuthManager {
@@ -41,54 +44,22 @@ export class AuthManager {
     if (existingUser != null) {
       throw new ApiException(ResponseCode.STATUS_4002_MOBILE_ALREADY_USED);
     }
-    //check how many time of retrial in the last 24 hours
-    const tokenList: UserRegistrationSmsToken[] =
-      await this.authService.findTokenByMobileAndCreatedDateMoreThanOrderByCreatedDateDesc(
+    const smsToken: UserSmsToken =
+      await this.authService.checkAndCreateSmsTokenByType(
+        AuthSmsTokenType.REGISTRATION,
         mobile,
-        this.dateUtil.subtractDays(Date.now(), 1),
       );
-    //if exceed, dont issue token
-    if (
-      tokenList.length >=
-      Number(
-        this.configService.get<string>(
-          'user.registration.SMS_VERIFY_RESEND_MAX_COUNT',
-        ),
-      )
-    ) {
-      throw new ApiException(
-        ResponseCode.STATUS_4006_RESEND_SMS_REQUEST_EXCEED_LIMIT,
-      );
-    }
-    //check latest issue token, if within interval, dont issue token
-    if (
-      tokenList[0] != null &&
-      (Date.now() - tokenList[0].createdDate.getTime()) / 1000 <
-        Number(
-          this.configService.get<string>(
-            'user.registration.SMS_VERIFY_RESEND_TIME_INTERVAL_IN_SECOND',
-          ),
-        )
-    ) {
-      throw new ApiException(
-        ResponseCode.STATUS_4005_RESEND_SMS_REQUEST_TOO_OFTEN,
-      );
-    }
-
-    //disable all existing tokens
-    await this.authService.deactivateAllExistingRegistrationSmsTokenByMobile(
-      mobile,
-    );
-    //create new tokens
-    const smsToken: UserRegistrationSmsToken =
-      await this.authService.createRegistrationSmsToken(mobile);
     await this.smsUtil.sendSms(mobile, smsToken.token);
     return new AppResponse();
   }
 
-  async registrationVerifySmsValidate(mobile: string, token: string) {
+  async verifySmsValidate(
+    type: AuthSmsTokenType,
+    mobile: string,
+    token: string,
+  ) {
     //check if the sms token is valid, won't deactivate the token
-    await this.authService.checkIsValidSmsToken(mobile, token);
+    await this.authService.checkIsValidSmsToken(type, mobile, token);
     return new AppResponse();
   }
 
@@ -105,7 +76,8 @@ export class AuthManager {
     );
     if (existingMobileUser != null) {
       //disable all existing tokens
-      await this.authService.deactivateAllExistingRegistrationSmsTokenByMobile(
+      await this.authService.deactivateAllExistingSmsTokenByTypeAndMobile(
+        AuthSmsTokenType.REGISTRATION,
         mobile,
       );
       throw new ApiException(ResponseCode.STATUS_4002_MOBILE_ALREADY_USED);
@@ -116,7 +88,8 @@ export class AuthManager {
       );
       if (existingEmailUser != null) {
         //disable all existing tokens
-        await this.authService.deactivateAllExistingRegistrationSmsTokenByMobile(
+        await this.authService.deactivateAllExistingSmsTokenByTypeAndMobile(
+          AuthSmsTokenType.REGISTRATION,
           mobile,
         );
         throw new ApiException(ResponseCode.STATUS_4001_EMAIL_ALREADY_USED);
@@ -124,9 +97,14 @@ export class AuthManager {
     }
 
     //check if the sms token is valid, won't deactivate the token
-    await this.authService.checkIsValidSmsToken(mobile, token);
+    await this.authService.checkIsValidSmsToken(
+      AuthSmsTokenType.REGISTRATION,
+      mobile,
+      token,
+    );
     //disable all existing tokens
-    await this.authService.deactivateAllExistingRegistrationSmsTokenByMobile(
+    await this.authService.deactivateAllExistingSmsTokenByTypeAndMobile(
+      AuthSmsTokenType.REGISTRATION,
       mobile,
     );
 
@@ -265,5 +243,97 @@ export class AuthManager {
       clientIp,
     );
     return new AppResponse(rsp);
+  }
+
+  async forgetPasswordVerifySmsResend(mobile: string) {
+    //check if the mobile is already registered
+    const existingUser: User = await this.authService.findOneUserByMobile(
+      mobile,
+    );
+    if (existingUser == null) {
+      throw new ApiException(ResponseCode.STATUS_4003_USER_NOT_EXIST);
+    }
+    const smsToken: UserSmsToken =
+      await this.authService.checkAndCreateSmsTokenByType(
+        AuthSmsTokenType.FORGET_PASSWORD,
+        mobile,
+      );
+    await this.smsUtil.sendSms(mobile, smsToken.token);
+    return new AppResponse();
+  }
+
+  async forgetPassword(
+    mobile: string,
+    newPassword: string,
+    token: string,
+  ): Promise<AppResponse> {
+    //check if the mobile/email is already registered
+    const existingMobileUser: User = await this.authService.findOneUserByMobile(
+      mobile,
+    );
+    const userBasicAuth: UserBasicAuth =
+      await this.authService.findOneUserBasicAuthByUsername(mobile);
+    if (existingMobileUser == null || userBasicAuth == null) {
+      //disable all existing tokens
+      await this.authService.deactivateAllExistingSmsTokenByTypeAndMobile(
+        AuthSmsTokenType.FORGET_PASSWORD,
+        mobile,
+      );
+      throw new ApiException(ResponseCode.STATUS_4003_USER_NOT_EXIST);
+    }
+
+    //check if the sms token is valid, won't deactivate the token
+    await this.authService.checkIsValidSmsToken(
+      AuthSmsTokenType.FORGET_PASSWORD,
+      mobile,
+      token,
+    );
+    //disable all existing tokens
+    await this.authService.deactivateAllExistingSmsTokenByTypeAndMobile(
+      AuthSmsTokenType.FORGET_PASSWORD,
+      mobile,
+    );
+
+    //update password
+    await this.authService.resetPasswordByBasicAuth(userBasicAuth, newPassword);
+
+    return new AppResponse();
+  }
+
+  async resetPassword(
+    userUuid: string,
+    newPassword: string,
+  ): Promise<AppResponse> {
+    //check if the mobile/email is already registered
+    const user: User = await this.userService.findOneUserByUuid(userUuid);
+
+    const userBasicAuth: UserBasicAuth =
+      await this.authService.findOneUserBasicAuthByUsername(user.mobile);
+    if (user == null || userBasicAuth == null) {
+      //disable all existing tokens
+      throw new ApiException(ResponseCode.STATUS_4003_USER_NOT_EXIST);
+    }
+
+    //update password
+    await this.authService.resetPasswordByBasicAuth(userBasicAuth, newPassword);
+
+    return new AppResponse();
+  }
+
+  async changeMobileVerifySmsResend(mobile: string) {
+    //check if the mobile is already registered
+    const existingUser: User = await this.authService.findOneUserByMobile(
+      mobile,
+    );
+    if (existingUser != null) {
+      throw new ApiException(ResponseCode.STATUS_4002_MOBILE_ALREADY_USED);
+    }
+    const smsToken: UserSmsToken =
+      await this.authService.checkAndCreateSmsTokenByType(
+        AuthSmsTokenType.CHANGE_MOBILE,
+        mobile,
+      );
+    await this.smsUtil.sendSms(mobile, smsToken.token);
+    return new AppResponse();
   }
 }

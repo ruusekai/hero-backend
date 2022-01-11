@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class AuthRegistrationVerifySmsResendReqDto {
+export class AuthVerifySmsResendReqDto {
   @IsNotEmpty()
   mobile: string;
 }

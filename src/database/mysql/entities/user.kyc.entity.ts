@@ -8,14 +8,16 @@ import { AdminDeclineReason } from '../../../common/enum/admin.decline.reason';
 export class UserKyc extends BaseEntity {
   constructor(
     userUuid: string,
-    fileUuid: string,
+    kycIdFileUuid: string,
+    selfieFileUuid: string,
     fullName: string,
     kycIdNumber: string,
     adminStatus: AdminApprovalStatus,
   ) {
     super();
     this.userUuid = userUuid;
-    this.fileUuid = fileUuid;
+    this.kycIdFileUuid = kycIdFileUuid;
+    this.selfieFileUuid = selfieFileUuid;
     this.fullName = fullName;
     this.kycIdNumber = kycIdNumber;
     this.adminStatus = adminStatus;
@@ -27,8 +29,11 @@ export class UserKyc extends BaseEntity {
   @Column({ name: 'user_uuid' })
   userUuid: string;
 
-  @Column({ name: 'file_uuid' })
-  fileUuid: string;
+  @Column({ name: 'kyc_id_file_uuid' })
+  kycIdFileUuid: string;
+
+  @Column({ name: 'selfie_file_uuid' })
+  selfieFileUuid: string;
 
   @Column({ name: 'full_name' })
   fullName: string;

@@ -3,7 +3,7 @@ import { BaseEntity } from './base.entity';
 import { AuthSmsTokenType } from '../../../modules/auth/enum/auth.sms.token.type';
 
 @Entity()
-export class UserRegistrationSmsToken extends BaseEntity {
+export class UserSmsToken extends BaseEntity {
   @Column({ name: 'mobile' })
   mobile: string;
 

@@ -1,6 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
-
 import { Module } from '@nestjs/common';
 import { UserBasicAuthRepository } from './user.basic.auth.repository';
 import { UserOauthLoginNonceRepository } from './user.oauth.login.nonce.repository';
@@ -11,6 +10,9 @@ import { FileThumbnailRepository } from './file.thumbnail.repository';
 import { UserKycRepository } from './user.kyc.repository';
 import { UserSmsTokenRepository } from './user.sms.token.repository';
 import { UserProfileRepository } from './user.profile.repository';
+import { CountryRepository } from './country.repository';
+import { CountryRegionRepository } from './country.region.repository';
+import { CountryDistrictRepository } from './country.district.repository';
 
 @Module({
   imports: [
@@ -25,6 +27,9 @@ import { UserProfileRepository } from './user.profile.repository';
       FileRepository,
       FileThumbnailRepository,
       UserKycRepository,
+      CountryRepository,
+      CountryRegionRepository,
+      CountryDistrictRepository,
     ]),
   ],
   providers: [],

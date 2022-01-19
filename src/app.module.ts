@@ -13,6 +13,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filter/all.exception.filter';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { FileModule } from './modules/file/file.module';
+import { CountryModule } from './modules/country/country.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FileModule } from './modules/file/file.module';
     AuthModule,
     UserModule,
     FileModule,
+    CountryModule,
   ],
   controllers: [AppController],
   providers: [

@@ -208,27 +208,3 @@ create table if not exists user_profile
     foreign key (user_uuid) references user (uuid)
 );
 
-
-create table if not exists task
-(
-    id int auto_increment
-    primary key,
-    boss_user_uuid varchar(255) not null,
-    banner varchar(1000) null,
-    district
-
-
-    title varchar(1000) null,
-    desc varchar(5000) null,
-
-    is_deleted int default 0 not null,
-    version int default 1 not null,
-    record_state int default 0 not null,
-    created_date timestamp default CURRENT_TIMESTAMP not null,
-    updated_date timestamp default CURRENT_TIMESTAMP not null,
-    created_by int default 0 not null,
-    updated_by int default 0 not null,
-    constraint user_profile_user_uuid_fk
-    foreign key (user_uuid) references user (uuid)
-);
-

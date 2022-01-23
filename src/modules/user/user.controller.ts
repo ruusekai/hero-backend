@@ -15,6 +15,8 @@ import { UserPatchUserReqDto } from './dto/request/user.patch.user.req.dto';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
 import { AppResponse } from '../../common/response/app.response';
+import { UserCouponStatus } from './enum/user.coupon.status';
+import { IsEnum } from 'class-validator';
 
 @Controller('/user')
 export class UserController {
@@ -59,5 +61,22 @@ export class UserController {
   @Get('/profile/:userUuid')
   getProfile(@Request() req, @Param('userUuid') userUuid: string) {
     return this.userManager.getProfileByUserUuid(userUuid);
+  }
+
+  @Get('/coupon')
+  findAllUserCouponByUserUuid(@Request() req) {
+    return this.userManager.findAllUserCouponByUserUuidAndStatus(req.user.uuid);
+  }
+
+  @Get('/coupon/:status')
+  findUserCouponByUserUuidAndStatus(
+    @Request() req,
+    @Param('status')
+    status: UserCouponStatus,
+  ) {
+    return this.userManager.findAllUserCouponByUserUuidAndStatus(
+      req.user.uuid,
+      status,
+    );
   }
 }

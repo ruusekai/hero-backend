@@ -13,6 +13,8 @@ import { UserProfileRepository } from './user.profile.repository';
 import { CountryRepository } from './country.repository';
 import { CountryRegionRepository } from './country.region.repository';
 import { CountryDistrictRepository } from './country.district.repository';
+import { UserCouponRepository } from './user.coupon.repository';
+import { TaskRepository } from './task.repository';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { CountryDistrictRepository } from './country.district.repository';
       CountryRepository,
       CountryRegionRepository,
       CountryDistrictRepository,
+      UserCouponRepository,
+      TaskRepository,
     ]),
   ],
   providers: [],

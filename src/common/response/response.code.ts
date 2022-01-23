@@ -95,6 +95,14 @@ export class ResponseCode {
     'Facebook api error.',
   );
 
+  //payment error
+  public static readonly STATUS_5001_INVALID_TOTAL_CHARGE_AMT =
+    new ResponseStatus(
+      5001,
+      'invalid total charge amt',
+      'invalid total charge amt.',
+    );
+
   //db error
   public static readonly STATUS_5001_DATABASE_ERROR = new ResponseStatus(
     5001,

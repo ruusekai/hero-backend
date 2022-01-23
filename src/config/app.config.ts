@@ -29,6 +29,11 @@ export default () => ({
       SMS_VERIFY_RESEND_MAX_COUNT: process.env.SMS_VERIFY_RESEND_MAX_COUNT || 5,
     },
   },
+  payment: {
+    TASK_MINIMUM_CHARGE_AMT: process.env.PAYMENT_TASK_MINIMUM_CHARGE_AMT || 10,
+    TASK_COST_CHARGE_PERCENTAGE:
+      process.env.PAYMENT_TASK_COST_CHARGE_PERCENTAGE || 10,
+  },
   sms: {
     twilio: {
       ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,

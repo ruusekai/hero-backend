@@ -12,7 +12,10 @@ import { UserPatchUserReqDto } from './dto/request/user.patch.user.req.dto';
 import { AuthService } from '../auth/auth.service';
 import { UserProfile } from '../../database/mysql/entities/user.profile.entity';
 import { UserProfileRspDto } from './dto/response/user.profile.rsp.dto';
-import Api from 'twilio/lib/rest/Api';
+import { UserCouponDto } from './dto/entity/user.coupon.dto';
+import { Coupon } from '../../database/mysql/entities/coupon.entity';
+import { FindAllUserCouponRspDto } from './dto/response/find.all.user.coupon.rsp.dto';
+import { UserCouponStatus } from './enum/user.coupon.status';
 
 @Injectable()
 export class UserManager {
@@ -122,5 +125,37 @@ export class UserManager {
       userProfile ? userProfile.selfIntroduction : null,
     );
     return new AppResponse(userProfileRspDto);
+  }
+
+  async findAllUserCouponByUserUuidAndStatus(
+    userUuid: string,
+    status: UserCouponStatus = null,
+  ) {
+    const options: any = {};
+    options.userUuid = userUuid;
+    if (status != null) {
+      options.status = status;
+    }
+
+    const userCouponList = await this.userService.findUserCouponByOptions(
+      options,
+    );
+    const userCouponDtoList: UserCouponDto[] = userCouponList.map(
+      (userCouponEntity) => {
+        const couponEntity: Coupon = userCouponEntity.coupon;
+        return new UserCouponDto(
+          userCouponEntity.uuid,
+          couponEntity.type,
+          couponEntity.code,
+          userCouponEntity.status,
+          userCouponEntity.expiryDate,
+          couponEntity.name,
+          couponEntity.description,
+          couponEntity.discountValue,
+        );
+      },
+    );
+    const rsp = new FindAllUserCouponRspDto(userCouponDtoList);
+    return new AppResponse(rsp);
   }
 }

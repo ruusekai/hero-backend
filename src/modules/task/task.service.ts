@@ -5,6 +5,7 @@ import { Task } from '../../database/mysql/entities/task.entity';
 import { TaskDto } from './dto/entity/task.dto';
 import { TaskRepository } from '../../database/mysql/repositories/task.repository';
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class TaskService {
@@ -52,5 +53,15 @@ export class TaskService {
 
   async saveTask(task: Task): Promise<Task> {
     return await this.taskRepository.saveTask(task);
+  }
+
+  async findApprovedTaskWithPaginate(
+    queryInput: any,
+    iPaginationOptions: IPaginationOptions,
+  ) {
+    return await this.taskRepository.findApprovedTaskByQueryInputAndIsDeletedFalseWithPaginate(
+      queryInput,
+      iPaginationOptions,
+    );
   }
 }

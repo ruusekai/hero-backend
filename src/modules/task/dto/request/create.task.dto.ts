@@ -3,9 +3,6 @@ import { TaskCategory } from '../../enum/task.category';
 
 export class CreateTaskDto {
   // todo: change banner to isnotempty once images are ready
-  @IsNotEmpty()
-  @IsEnum(TaskCategory)
-  category: TaskCategory;
   @IsOptional()
   banner: string;
   @IsNotEmpty()

@@ -8,7 +8,6 @@ import { TaskCategory } from '../../../modules/task/enum/task.category';
 @Entity()
 export class Task extends BaseEntity {
   constructor(
-    category: TaskCategory,
     bossUserUuid: string,
     banner: string,
     title: string,
@@ -26,7 +25,6 @@ export class Task extends BaseEntity {
     adminStatus: AdminApprovalStatus,
   ) {
     super();
-    this.category = category;
     this.bossUserUuid = bossUserUuid;
     this.banner = banner;
     this.title = title;

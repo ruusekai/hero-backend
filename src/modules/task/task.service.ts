@@ -14,7 +14,6 @@ export class TaskService {
     createTaskDto: CreateTaskDto,
   ): Promise<TaskDto> {
     let task: Task = new Task(
-      createTaskDto.category,
       bossUserUuid,
       createTaskDto.banner,
       createTaskDto.title,

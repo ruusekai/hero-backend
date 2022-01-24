@@ -6,7 +6,7 @@ create table if not exists task
     uuid varchar(255) not null,
 
     boss_user_uuid varchar(255) not null,
-    category varchar(255) not null,
+    category varchar(255),
     banner varchar(1000) not null,
     title varchar(1000) not null,
     description varchar(1000) not null,

@@ -6,6 +6,7 @@ import { TaskDto } from './dto/entity/task.dto';
 import { TaskRepository } from '../../database/mysql/repositories/task.repository';
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
+import { TaskPaymentStatus } from './enum/task.payment.status';
 
 @Injectable()
 export class TaskService {
@@ -27,9 +28,11 @@ export class TaskService {
       createTaskDto.expiryDate,
       createTaskDto.basicCostAmt,
       createTaskDto.heroRewardAmt,
+      createTaskDto.serviceChargeAmt,
       createTaskDto.totalChargeAmt,
       'HKD',
       AdminApprovalStatus.PENDING,
+      TaskPaymentStatus.PENDING,
     );
     task = await this.saveTask(task);
     return new TaskDto(task);
@@ -62,6 +65,12 @@ export class TaskService {
     return await this.taskRepository.findApprovedTaskByQueryInputAndIsDeletedFalseWithPaginate(
       queryInput,
       iPaginationOptions,
+    );
+  }
+
+  async findOneTaskByUuid(taskUuid: string) {
+    return await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(
+      taskUuid,
     );
   }
 }

@@ -95,14 +95,6 @@ export class ResponseCode {
     'Facebook api error.',
   );
 
-  //payment error
-  public static readonly STATUS_5001_INVALID_TOTAL_CHARGE_AMT =
-    new ResponseStatus(
-      5001,
-      'invalid total charge amt',
-      'invalid total charge amt.',
-    );
-
   //db error
   public static readonly STATUS_5001_DATABASE_ERROR = new ResponseStatus(
     5001,
@@ -115,6 +107,33 @@ export class ResponseCode {
     6001,
     'File service Error',
     'Please try again later',
+  );
+
+  //payment error
+  public static readonly STATUS_7001_INVALID_TOTAL_CHARGE_AMT =
+    new ResponseStatus(
+      7001,
+      'invalid total charge amt',
+      'invalid total charge amt.',
+    );
+
+  public static readonly STATUS_7002_INVALID_USER_COUPON = new ResponseStatus(
+    7002,
+    'invalid user coupon',
+    'invalid user coupon',
+  );
+
+  public static readonly STATUS_7003_INVALID_TOTAL_CHARGE_AMT =
+    new ResponseStatus(
+      7003,
+      'invalid final charge amt',
+      'invalid final charge amt.',
+    );
+
+  public static readonly STATUS_7004_TASK_ALREADY_PAID = new ResponseStatus(
+    7004,
+    'the task is already paid',
+    'the task is already paid',
   );
 
   //system error

@@ -4,6 +4,7 @@ import { User } from './user.entity';
 import { AdminApprovalStatus } from '../../../common/enum/admin.approval.status';
 import { AdminDeclineReason } from '../../../common/enum/admin.decline.reason';
 import { TaskCategory } from '../../../modules/task/enum/task.category';
+import { TaskPaymentStatus } from '../../../modules/task/enum/task.payment.status';
 
 @Entity()
 export class Task extends BaseEntity {
@@ -20,9 +21,11 @@ export class Task extends BaseEntity {
     expiryDate: Date,
     basicCostAmt: number,
     heroRewardAmt: number,
+    serviceChargeAmt: number,
     totalChargeAmt: number,
     currency: string,
     adminStatus: AdminApprovalStatus,
+    paymentStatus: TaskPaymentStatus,
   ) {
     super();
     this.bossUserUuid = bossUserUuid;
@@ -37,9 +40,11 @@ export class Task extends BaseEntity {
     this.expiryDate = expiryDate;
     this.basicCostAmt = basicCostAmt;
     this.heroRewardAmt = heroRewardAmt;
+    this.serviceChargeAmt = serviceChargeAmt;
     this.totalChargeAmt = totalChargeAmt;
     this.currency = currency;
     this.adminStatus = adminStatus;
+    this.paymentStatus = paymentStatus;
   }
 
   @Column({ name: 'uuid', unique: true })
@@ -85,6 +90,9 @@ export class Task extends BaseEntity {
   @Column({ name: 'hero_reward_amt' })
   heroRewardAmt: number;
 
+  @Column({ name: 'service_charge_amt' })
+  serviceChargeAmt: number;
+
   @Column({ name: 'total_charge_amt' })
   totalChargeAmt: number;
 
@@ -99,6 +107,9 @@ export class Task extends BaseEntity {
 
   @Column({ name: 'admin_remarks' })
   adminRemarks: string;
+
+  @Column({ name: 'payment_status' })
+  paymentStatus: TaskPaymentStatus;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'boss_user_uuid', referencedColumnName: 'uuid' })

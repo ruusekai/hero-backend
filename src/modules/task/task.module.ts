@@ -4,12 +4,13 @@ import { TaskController } from './task.controller';
 import { TaskManager } from './task.manager';
 import { MySqlRepositoryModule } from '../../database/mysql/repositories/mysql.repository.module';
 import { ConfigModule } from '@nestjs/config';
-import { UserService } from '../user/user.service';
 import { PaymentUtilModule } from '../../utils/payment/payment.util.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [MySqlRepositoryModule, ConfigModule, PaymentUtilModule],
+  imports: [MySqlRepositoryModule, ConfigModule, UserModule, PaymentUtilModule],
   controllers: [TaskController],
-  providers: [TaskManager, TaskService, UserService],
+  providers: [TaskManager, TaskService],
+  exports: [TaskService],
 })
 export class TaskModule {}

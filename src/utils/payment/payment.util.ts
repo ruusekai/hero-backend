@@ -21,15 +21,20 @@ export class PaymentUtil {
   async verifyTotalChargeAmt(
     basicCostAmt: number,
     heroRewardAmt: number,
+    serviceChargeAmt: number,
     totalChargeAmt: number,
   ) {
     const totalCost = basicCostAmt + heroRewardAmt;
-    const shouldChargeAmt: number =
+    const calcServiceCharge: number =
       (totalCost * this.taskChargePercentage) / 100 < this.taskMinChargeAmt
         ? this.taskMinChargeAmt
         : (totalCost * this.taskChargePercentage) / 100;
-    if (totalChargeAmt.toFixed(2) != shouldChargeAmt.toFixed(2)) {
-      throw new ApiException(ResponseCode.STATUS_5001_INVALID_TOTAL_CHARGE_AMT);
+    if (calcServiceCharge.toFixed(2) != serviceChargeAmt.toFixed(2)) {
+      throw new ApiException(ResponseCode.STATUS_7001_INVALID_TOTAL_CHARGE_AMT);
+    } else if (
+      (totalCost + serviceChargeAmt).toFixed(2) != totalChargeAmt.toFixed(2)
+    ) {
+      throw new ApiException(ResponseCode.STATUS_7001_INVALID_TOTAL_CHARGE_AMT);
     }
     return true;
   }

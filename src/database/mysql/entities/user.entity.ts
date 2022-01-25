@@ -1,7 +1,6 @@
-import { Column, Entity, Generated, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, Generated } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { AppLanguage } from '../../../common/enum/app.language';
-import { UserProfile } from './user.profile.entity';
 
 export enum UserAuthType {
   BASIC = 'basic',
@@ -29,6 +28,9 @@ export class User extends BaseEntity {
   @Column({ name: 'uuid', unique: true })
   @Generated('uuid')
   uuid: string;
+
+  @Column({ name: 'stripe_customer_id' })
+  stripeCustomerId: string;
 
   @Column({ name: 'auth_type' })
   authType: UserAuthType;

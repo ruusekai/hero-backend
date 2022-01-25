@@ -18,14 +18,16 @@ create table if not exists task
     longitude varchar(255),
 
     expiry_date timestamp,
-    basic_cost_amt decimal,
-    hero_reward_amt decimal,
-    total_charge_amt decimal not null,
+    basic_cost_amt decimal(10,2),
+    hero_reward_amt decimal(10,2),
+    total_charge_amt decimal(10,2) not null,
     currency varchar(255) default 'HKD' not null,
 
     admin_status varchar(255) not null,
     decline_reason varchar(255),
     admin_remarks varchar(5000),
+
+    payment_status varchar(255) default 'pending' not null,
 
     is_deleted int default 0 not null,
     version int default 1 not null,
@@ -62,31 +64,34 @@ create table if not exists task
 --     constraint task_uuid_uindex
 --     unique (uuid)
 --     );
---
--- create table if not exists payment
--- (
---     id int auto_increment
---     primary key,
---     bill_type varchar(255) not null,
---     status varchar(255) not null,
---     ref_id varchar(1000) not null,
---     coupon_id varchar(5000) ,
---     amt number not null,
---     coupon_discount_amt number not null,
---     final_amt number not null,
---     currency varchar(255) not null default 'HKD',
---
---     is_deleted int default 0 not null,
---     version int default 1 not null,
---     record_state int default 0 not null,
---     created_date timestamp default CURRENT_TIMESTAMP not null,
---     updated_date timestamp default CURRENT_TIMESTAMP not null,
---     created_by int default 0 not null,
---     updated_by int default 0 not null,
---     constraint user_profile_user_uuid_fk
---     foreign key (user_uuid) references user (uuid)
--- );
 
+create table if not exists payment_intent
+(
+    id int auto_increment
+    primary key,
+    user_uuid varchar(255) not null,
+    stripe_customer_id varchar(255) not null,
+    stripe_payment_intent_id varchar(255) not null,
+    ref_id varchar(255) not null,
+    status varchar(255) not null,
+    user_coupon_uuid varchar(255),
+    coupon_discount_amt decimal(10,2),
+    total_charge_amt decimal(10,2) not null,
+    final_charge_amt decimal(10,2) not null,
+    currency varchar(255) not null default 'HKD',
+
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    record_state int default 0 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint payment_intent_user_uuid_fk
+    foreign key (user_uuid) references user (uuid)
+    constraint payment_intent_user_uuid_fk
+    foreign key (user_uuid) references user (uuid)
+);
 
 
 
@@ -98,7 +103,7 @@ create table if not exists coupon
     type varchar(255) not null,
     name varchar(1000) not null,
     description varchar(1000),
-    discount_value decimal not null,
+    discount_value decimal(10,2) not null,
     currency varchar(255) not null default 'HKD',
     is_deleted int default 0 not null,
     version int default 1 not null,

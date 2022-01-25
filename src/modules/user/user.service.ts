@@ -7,7 +7,6 @@ import { UserProfile } from '../../database/mysql/entities/user.profile.entity';
 import { UserProfileRepository } from '../../database/mysql/repositories/user.profile.repository';
 import { UserCoupon } from '../../database/mysql/entities/user.coupon.entity';
 import { UserCouponRepository } from '../../database/mysql/repositories/user.coupon.repository';
-import { UserCouponStatus } from './enum/user.coupon.status';
 
 @Injectable()
 export class UserService {
@@ -68,9 +67,13 @@ export class UserService {
     );
   }
 
-  async findOneUserCouponByCouponCode(couponCode: string): Promise<UserCoupon> {
-    return await this.userCouponRepository.findOneUserCouponByCouponCode(
-      couponCode,
+  async findActiveUserCoupon(
+    userUuid: string,
+    userCouponUuid: string,
+  ): Promise<UserCoupon> {
+    return await this.userCouponRepository.findActiveUserCouponByUserUuidAndUserCouponUuid(
+      userUuid,
+      userCouponUuid,
     );
   }
 

@@ -3,6 +3,7 @@ create table if not exists user
     id int auto_increment
     primary key,
     uuid varchar(255) not null,
+    stripe_customer_id varchar(255),
     auth_type varchar(255) not null,
     mobile varchar(255) null,
     email varchar(1000) null,

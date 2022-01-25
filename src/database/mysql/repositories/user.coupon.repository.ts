@@ -30,10 +30,18 @@ export class UserCouponRepository extends Repository<UserCoupon> {
     }
   }
 
-  async findOneUserCouponByCouponCode(couponCode: string): Promise<UserCoupon> {
+  async findActiveUserCouponByUserUuidAndUserCouponUuid(
+    userUuid: string,
+    userCouponUuid: string,
+  ): Promise<UserCoupon> {
     try {
       return await this.findOne({
-        where: { couponCode: couponCode, isDeleted: false },
+        where: {
+          userUuid: userUuid,
+          uuid: userCouponUuid,
+          status: 'active',
+          isDeleted: false,
+        },
         relations: ['coupon'],
       });
     } catch (e) {

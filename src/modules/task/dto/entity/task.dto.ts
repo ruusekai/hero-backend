@@ -10,6 +10,7 @@ export class TaskDto {
     this.title = task.title;
     this.basicCostAmt = task.basicCostAmt;
     this.heroRewardAmt = task.heroRewardAmt;
+    this.serviceChargeAmt = task.serviceChargeAmt;
     this.totalChargeAmt = task.totalChargeAmt;
     this.expiryDate = task.expiryDate;
     this.description = task.description;
@@ -27,6 +28,7 @@ export class TaskDto {
   title: string;
   basicCostAmt: number;
   heroRewardAmt: number;
+  serviceChargeAmt: number;
   totalChargeAmt: number;
   expiryDate: Date;
 

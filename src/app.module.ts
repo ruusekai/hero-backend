@@ -14,8 +14,8 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { FileModule } from './modules/file/file.module';
 import { CountryModule } from './modules/country/country.module';
 import { TaskModule } from './modules/task/task.module';
-import { PaymentModule } from './payment/payment.module';
 import ormConfig = require('./config/ormconfig');
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -29,8 +29,8 @@ import ormConfig = require('./config/ormconfig');
     UserModule,
     FileModule,
     CountryModule,
-    PaymentModule,
     TaskModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [

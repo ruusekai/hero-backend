@@ -5,9 +5,7 @@ import { CreateTaskDto } from './dto/request/create.task.dto';
 import { UserService } from '../user/user.service';
 import { AppResponse } from '../../common/response/app.response';
 import { PaymentUtil } from '../../utils/payment/payment.util';
-import { TaskCategory } from './enum/task.category';
 import { FindTaskReqDto } from './dto/request/find.task.req.dto';
-import { Task } from '../../database/mysql/entities/task.entity';
 import { TaskDto } from './dto/entity/task.dto';
 import { FindTaskRspDto } from './dto/response/find.task.rsp.dto';
 import { PaginateRspDto } from '../../common/dto/response/paginate.rsp.dto';
@@ -27,6 +25,7 @@ export class TaskManager {
     await this.paymentUtil.verifyTotalChargeAmt(
       createTaskDto.basicCostAmt,
       createTaskDto.heroRewardAmt,
+      createTaskDto.serviceChargeAmt,
       createTaskDto.totalChargeAmt,
     );
     //todo; checkings

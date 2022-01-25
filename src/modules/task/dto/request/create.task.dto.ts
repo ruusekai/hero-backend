@@ -12,6 +12,8 @@ export class CreateTaskDto {
   @IsNotEmpty()
   heroRewardAmt: number;
   @IsNotEmpty()
+  serviceChargeAmt: number;
+  @IsNotEmpty()
   totalChargeAmt: number;
   @IsNotEmpty()
   expiryDate: Date;

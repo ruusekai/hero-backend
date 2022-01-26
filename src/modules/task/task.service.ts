@@ -35,7 +35,24 @@ export class TaskService {
       TaskPaymentStatus.PENDING,
     );
     task = await this.saveTask(task);
-    return new TaskDto(task);
+    return new TaskDto(
+      task.uuid,
+      task.bossUserUuid,
+      task.category,
+      task.banner,
+      task.title,
+      task.basicCostAmt,
+      task.heroRewardAmt,
+      task.serviceChargeAmt,
+      task.totalChargeAmt,
+      task.expiryDate,
+      task.description,
+      task.regionId,
+      task.districtId,
+      task.address,
+      task.latitude,
+      task.longitude,
+    );
   }
 
   findAll() {
@@ -58,10 +75,10 @@ export class TaskService {
     return await this.taskRepository.saveTask(task);
   }
 
-  async findApprovedTaskWithPaginate(
+  async findApprovedTaskWithRawPaginate(
     queryInput: any,
     iPaginationOptions: IPaginationOptions,
-  ) {
+  ): Promise<any> {
     return await this.taskRepository.findApprovedTaskByQueryInputAndIsDeletedFalseWithPaginate(
       queryInput,
       iPaginationOptions,

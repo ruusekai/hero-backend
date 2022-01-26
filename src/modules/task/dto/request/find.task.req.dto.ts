@@ -1,5 +1,7 @@
-import { IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { PaginateReqDto } from '../../../../common/dto/request/paginate.req.dto';
+import { TaskOrderByColumn } from '../enum/task.order.by.column';
+import { OrderDirection } from '../enum/order.direction';
 
 export class FindTaskReqDto extends PaginateReqDto {
   @IsOptional()
@@ -15,4 +17,15 @@ export class FindTaskReqDto extends PaginateReqDto {
 
   @IsOptional()
   maxHeroRewardAmt: number;
+
+  @IsOptional()
+  currentLocation: string;
+
+  @IsOptional()
+  @IsEnum(TaskOrderByColumn)
+  orderBy: TaskOrderByColumn;
+
+  @IsOptional()
+  @IsEnum(OrderDirection)
+  orderDirection: OrderDirection;
 }

@@ -33,6 +33,8 @@ export default () => ({
     TASK_MINIMUM_CHARGE_AMT: process.env.PAYMENT_TASK_MINIMUM_CHARGE_AMT || 10,
     TASK_COST_CHARGE_PERCENTAGE:
       process.env.PAYMENT_TASK_COST_CHARGE_PERCENTAGE || 10,
+    STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   },
   sms: {
     twilio: {

@@ -135,6 +135,12 @@ export class ResponseCode {
     'the task is already paid',
     'the task is already paid',
   );
+  public static readonly STATUS_7005_INVALID_CURRENT_LOCATION =
+    new ResponseStatus(
+      7005,
+      'the lat/lon provided is invalid',
+      'Please allow the app the access your current location to use this function',
+    );
 
   //system error
   public static readonly STATUS_9999_SYSTEM_ERROR = new ResponseStatus(

@@ -9,6 +9,7 @@ import { Task } from '../../database/mysql/entities/task.entity';
 import { TaskPaymentStatus } from '../task/enum/task.payment.status';
 import { UserService } from '../user/user.service';
 import { User } from '../../database/mysql/entities/user.entity';
+import { PaymentUtil } from '../../utils/payment/payment.util';
 
 @Injectable()
 export class PaymentManager {
@@ -16,6 +17,7 @@ export class PaymentManager {
     private readonly paymentService: PaymentService,
     private readonly userService: UserService,
     private readonly taskService: TaskService,
+    private readonly paymentUtil: PaymentUtil,
   ) {}
 
   private readonly logger = new Logger(PaymentManager.name);
@@ -60,9 +62,12 @@ export class PaymentManager {
 
     //check if the user already exist on stripe
     const user: User = await this.userService.findOneUserByUuid(bossUserUuid);
+    let customerId: string = user.stripeCustomerId;
     if (user.stripeCustomerId == null) {
+      const customer = await this.paymentUtil.createCustomer();
+      customerId = customer.id;
     }
-    return new AppResponse();
+    return new AppResponse(customerId);
   }
 
   findAll() {

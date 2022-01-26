@@ -14,12 +14,14 @@ import { CreateTaskDto } from './dto/request/create.task.dto';
 import { TaskManager } from './task.manager';
 import { TaskService } from './task.service';
 import { FindTaskReqDto } from './dto/request/find.task.req.dto';
+import { TaskRepository } from '../../database/mysql/repositories/task.repository';
 
 @Controller('task')
 export class TaskController {
   constructor(
     private readonly taskManager: TaskManager,
     private readonly taskService: TaskService,
+    private readonly taskRepository: TaskRepository,
   ) {}
 
   @Post()
@@ -35,10 +37,5 @@ export class TaskController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
     return this.taskService.update(+id, updateTaskDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.taskService.remove(+id);
   }
 }

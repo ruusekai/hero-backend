@@ -87,7 +87,7 @@ export class TaskRepository extends Repository<Task> {
             `ST_Distance_Sphere(point(${queryInput.longitude}, ${queryInput.latitude}),point(task.longitude, task.latitude))`,
             'task_distance',
           )
-          .orderBy('task_distance', OrderDirection.ASC);
+          .orderBy('-task_distance', OrderDirection.DESC);
       } else if (queryInput.orderBy != null) {
         queryBuilder.orderBy(
           `task.${queryInput.orderBy}`,

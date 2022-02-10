@@ -32,11 +32,7 @@ export class PaymentService {
     return `This action returns a #${id} payment`;
   }
 
-  async verifyUserCoupon(
-    userUuid: string,
-    userCouponUuid: string,
-    couponDiscountAmt: number,
-  ) {
+  async verifyUserCoupon(userUuid: string, userCouponUuid: string) {
     const userCoupon: UserCoupon = await this.userService.findActiveUserCoupon(
       userUuid,
       userCouponUuid,
@@ -45,16 +41,7 @@ export class PaymentService {
       throw new ApiException(ResponseCode.STATUS_7002_INVALID_USER_COUPON);
     }
     this.logger.log('userCoupon:' + JSON.stringify(userCoupon));
-    if (userCoupon.coupon.type === CouponType.FIXED_AMT) {
-      if (
-        Number(userCoupon.coupon.discountValue).toFixed(2) !==
-        couponDiscountAmt.toFixed(2)
-      ) {
-        throw new ApiException(
-          ResponseCode.STATUS_7008_INVALID_COUPON_DISCOUNT_AMT,
-        );
-      }
-    }
+
     //todo: percentage coupon not yet supported
     if (userCoupon.coupon.type === CouponType.PERCENTAGE) {
       throw new ApiException(ResponseCode.STATUS_7002_INVALID_USER_COUPON);
@@ -71,7 +58,7 @@ export class PaymentService {
     //     );
     //   }
     // }
-    return true;
+    return userCoupon;
   }
 
   async savePaymentIntent(entity: PaymentIntent) {

@@ -33,7 +33,7 @@ export class PaymentManager {
     createPaymentDto: CreateTaskPaymentReqDto,
   ): Promise<AppResponse> {
     const taskEntity: Task = await this.taskService.findOneTaskByUuid(taskUuid);
-    const couponDiscountAmt = createPaymentDto.couponDiscountAmt;
+    let couponDiscountAmt = 0;
     let effectiveCouponDiscountAmt: number = null;
     let calcFinalChargeAmt: number = null;
 
@@ -46,10 +46,12 @@ export class PaymentManager {
 
     //verify finalChargeAmt
     if (createPaymentDto.userCouponUuid != null) {
+      const userCoupon: UserCoupon = await this.paymentService.verifyUserCoupon(
+        bossUserUuid,
+        createPaymentDto.userCouponUuid,
+      );
+      couponDiscountAmt = userCoupon.coupon.discountValue;
       //coupon can only use to reduce service charge
-      if (couponDiscountAmt == null) {
-        throw new ApiException(ResponseCode.STATUS_4004_BAD_REQUEST);
-      }
       effectiveCouponDiscountAmt =
         Number(taskEntity.serviceChargeAmt) < Number(couponDiscountAmt)
           ? Number(taskEntity.serviceChargeAmt)
@@ -65,11 +67,6 @@ export class PaymentManager {
           ResponseCode.STATUS_7003_INVALID_FINAL_CHARGE_AMT,
         );
       }
-      await this.paymentService.verifyUserCoupon(
-        bossUserUuid,
-        createPaymentDto.userCouponUuid,
-        createPaymentDto.couponDiscountAmt,
-      );
     } else {
       if (
         Number(taskEntity.totalChargeAmt) !==

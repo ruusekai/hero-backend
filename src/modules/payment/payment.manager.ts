@@ -102,7 +102,7 @@ export class PaymentManager {
     let paymentIntentEntity = new PaymentIntent();
     paymentIntentEntity.userUuid = user.uuid;
     paymentIntentEntity.stripeCustomerId = user.stripeCustomerId;
-    paymentIntentEntity.stripePaymentIntentId = user.stripeCustomerId;
+    paymentIntentEntity.stripePaymentIntentId = paymentIntent.id;
     paymentIntentEntity.taskUuid = taskEntity.uuid;
     paymentIntentEntity.userCouponUuid = user.uuid;
     paymentIntentEntity.couponDiscountAmt = couponDiscountAmt;

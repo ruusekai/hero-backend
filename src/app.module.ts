@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
@@ -16,6 +21,8 @@ import { CountryModule } from './modules/country/country.module';
 import { TaskModule } from './modules/task/task.module';
 import ormConfig = require('./config/ormconfig');
 import { PaymentModule } from './modules/payment/payment.module';
+import { RawBodyMiddleware } from './common/middleware/raw-body.middleware';
+import { JsonBodyMiddleware } from './common/middleware/json-body.middleware';
 
 @Module({
   imports: [
@@ -45,4 +52,15 @@ import { PaymentModule } from './modules/payment/payment.module';
     AppService,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(RawBodyMiddleware)
+      .forRoutes({
+        path: '/payment/webhook',
+        method: RequestMethod.POST,
+      })
+      .apply(JsonBodyMiddleware)
+      .forRoutes('*');
+  }
+}

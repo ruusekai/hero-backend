@@ -19,7 +19,8 @@ create table if not exists task
 
     expiry_date timestamp,
     basic_cost_amt decimal(10,2),
-    hero_reward_amt decimal(10,2),
+    hero_reward_amt decimal(10,2) not null,
+    service_charge_amt decimal(10,2) not null,
     total_charge_amt decimal(10,2) not null,
     currency varchar(255) default 'HKD' not null,
 
@@ -72,27 +73,47 @@ create table if not exists payment_intent
     user_uuid varchar(255) not null,
     stripe_customer_id varchar(255) not null,
     stripe_payment_intent_id varchar(255) not null,
-    ref_id varchar(255) not null,
-    status varchar(255) not null,
+    task_uuid varchar(255) not null,
     user_coupon_uuid varchar(255),
     coupon_discount_amt decimal(10,2),
+    effective_coupon_discount_amt decimal(10,2),
     total_charge_amt decimal(10,2) not null,
     final_charge_amt decimal(10,2) not null,
-    currency varchar(255) not null default 'HKD',
+    currency varchar(255) not null default 'hkd',
+    stripe_payment_method_types varchar(1000),
+    stripe_amount_capturable varchar(255),
+    stripe_amount_received varchar(255),
+    stripe_canceled_at timestamp,
+    stripe_cancellation_reason varchar(255),
+    stripe_status varchar(255) not null,
 
     is_deleted int default 0 not null,
     version int default 1 not null,
-    record_state int default 0 not null,
     created_date timestamp default CURRENT_TIMESTAMP not null,
     updated_date timestamp default CURRENT_TIMESTAMP not null,
     created_by int default 0 not null,
     updated_by int default 0 not null,
     constraint payment_intent_user_uuid_fk
-    foreign key (user_uuid) references user (uuid)
-    constraint payment_intent_user_uuid_fk
-    foreign key (user_uuid) references user (uuid)
+    foreign key (user_uuid) references user (uuid),
+    constraint payment_intent_task_uuid_fk
+    foreign key (task_uuid) references task (uuid)
 );
 
+
+create table if not exists stripe_webhook
+(
+    id int auto_increment
+    primary key,
+    stripe_payment_intent_id varchar(255) not null,
+    webhook varchar(5000) not null,
+
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null
+)
 
 
 create table if not exists coupon

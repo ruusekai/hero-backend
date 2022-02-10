@@ -123,24 +123,45 @@ export class ResponseCode {
     'invalid user coupon',
   );
 
-  public static readonly STATUS_7003_INVALID_TOTAL_CHARGE_AMT =
+  public static readonly STATUS_7003_INVALID_FINAL_CHARGE_AMT =
     new ResponseStatus(
       7003,
       'invalid final charge amt',
       'invalid final charge amt.',
     );
 
-  public static readonly STATUS_7004_TASK_ALREADY_PAID = new ResponseStatus(
-    7004,
-    'the task is already paid',
-    'the task is already paid',
-  );
+  public static readonly STATUS_7004_INVALID_HERO_REWARD_AMT =
+    new ResponseStatus(
+      7004,
+      'hero的報酬不可低於任務成本的5%',
+      'the task is already paid',
+    );
   public static readonly STATUS_7005_INVALID_CURRENT_LOCATION =
     new ResponseStatus(
       7005,
       'the lat/lon provided is invalid',
       'Please allow the app the access your current location to use this function',
     );
+
+  public static readonly STATUS_7006_TASK_ALREADY_PAID = new ResponseStatus(
+    7006,
+    'the task is already paid',
+    'the task is already paid',
+  );
+
+  public static readonly STATUS_7007_STRIPE_ERROR = new ResponseStatus(
+    7007,
+    'stripe error',
+    'stripe error',
+  );
+  public static readonly STATUS_7008_INVALID_COUPON_DISCOUNT_AMT =
+    new ResponseStatus(
+      7008,
+      'invalid coupon discount amt',
+      'invalid coupon discount amt.',
+    );
+  public static readonly STATUS_7009_STRIPE_INVALID_WEBHOOK =
+    new ResponseStatus(7009, 'invalid webhook', 'invalid webhook');
 
   //system error
   public static readonly STATUS_9999_SYSTEM_ERROR = new ResponseStatus(

@@ -15,6 +15,8 @@ import { CountryRegionRepository } from './country.region.repository';
 import { CountryDistrictRepository } from './country.district.repository';
 import { UserCouponRepository } from './user.coupon.repository';
 import { TaskRepository } from './task.repository';
+import { PaymentIntentRepository } from './payment.intent.repository';
+import { StripeWebhookRepository } from './stripe.webhook.repository';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { TaskRepository } from './task.repository';
       CountryDistrictRepository,
       UserCouponRepository,
       TaskRepository,
+      PaymentIntentRepository,
+      StripeWebhookRepository,
     ]),
   ],
   providers: [],

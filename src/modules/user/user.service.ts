@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from '../../database/mysql/repositories/user.repository';
 import { User } from '../../database/mysql/entities/user.entity';
 import { UserKyc } from '../../database/mysql/entities/user.kyc.entity';
@@ -7,6 +7,9 @@ import { UserProfile } from '../../database/mysql/entities/user.profile.entity';
 import { UserProfileRepository } from '../../database/mysql/repositories/user.profile.repository';
 import { UserCoupon } from '../../database/mysql/entities/user.coupon.entity';
 import { UserCouponRepository } from '../../database/mysql/repositories/user.coupon.repository';
+import { UserCouponStatus } from './enum/user.coupon.status';
+import { ApiException } from '../../common/exception/api.exception';
+import { ResponseCode } from '../../common/response/response.code';
 
 @Injectable()
 export class UserService {
@@ -16,6 +19,8 @@ export class UserService {
     private readonly userProfileRepository: UserProfileRepository,
     private readonly userCouponRepository: UserCouponRepository,
   ) {}
+
+  private readonly logger = new Logger(UserService.name);
 
   //user-repo
   async findOneUserByUuid(uuid: string): Promise<User> {
@@ -77,7 +82,31 @@ export class UserService {
     );
   }
 
-  async saveUserCoupon(userCoupon: UserCoupon): Promise<UserCoupon> {
-    return await this.userCouponRepository.saveUserCoupon(userCoupon);
+  async useUserCoupon(
+    userUuid: string,
+    userCouponUuid: string,
+  ): Promise<UserCoupon> {
+    const userCoupon =
+      await this.userCouponRepository.findActiveUserCouponByUserUuidAndUserCouponUuid(
+        userUuid,
+        userCouponUuid,
+      );
+    if (userCoupon == null) {
+      throw new ApiException(ResponseCode.STATUS_7002_INVALID_USER_COUPON);
+    }
+    if (userCoupon.status !== UserCouponStatus.ACTIVE) {
+      this.logger.error(
+        `invalid coupon ${userCouponUuid} for user ${userUuid}, with status ${userCoupon.status}`,
+      );
+    }
+    userCoupon.status = UserCouponStatus.USED;
+
+    const entity: UserCoupon = await this.userCouponRepository.saveUserCoupon(
+      userCoupon,
+    );
+    this.logger.log(
+      `coupon ${userCouponUuid} for user ${userUuid} successfully used`,
+    );
+    return entity;
   }
 }

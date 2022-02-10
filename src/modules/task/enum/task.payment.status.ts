@@ -1,5 +1,7 @@
 export enum TaskPaymentStatus {
   PENDING = 'pending',
-  SUCCESS = 'success',
+  REQUIRES_CAPTURE = 'requires_capture',
+  SUCCEEDED = 'succeeded', //captured
   FAILED = 'failed',
+  CANCELLED = 'cancelled',
 }

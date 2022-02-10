@@ -5,10 +5,18 @@ import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
 import { CouponType } from './enum/coupon.type';
 import { CreateTaskPaymentReqDto } from './dto/create.task.payment.req.dto';
+import { PaymentIntentRepository } from '../../database/mysql/repositories/payment.intent.repository';
+import { PaymentIntent } from '../../database/mysql/entities/payment.intent.entity';
+import { StripeWebhook } from '../../database/mysql/entities/stripe.webhook.entity';
+import { StripeWebhookRepository } from '../../database/mysql/repositories/stripe.webhook.repository';
 
 @Injectable()
 export class PaymentService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly paymentIntentRepository: PaymentIntentRepository,
+    private readonly stripeWebhookRepository: StripeWebhookRepository,
+  ) {}
 
   private readonly logger = new Logger(PaymentService.name);
 
@@ -28,8 +36,6 @@ export class PaymentService {
     userUuid: string,
     userCouponUuid: string,
     couponDiscountAmt: number,
-    totalChargeAmt: number,
-    finalChargeAmt: number,
   ) {
     const userCoupon: UserCoupon = await this.userService.findActiveUserCoupon(
       userUuid,
@@ -40,23 +46,47 @@ export class PaymentService {
     }
     this.logger.log('userCoupon:' + JSON.stringify(userCoupon));
     if (userCoupon.coupon.type === CouponType.FIXED_AMT) {
-      if (totalChargeAmt - userCoupon.coupon.discountValue !== finalChargeAmt) {
-        throw new ApiException(
-          ResponseCode.STATUS_7003_INVALID_TOTAL_CHARGE_AMT,
-        );
-      }
-    }
-    if (userCoupon.coupon.type === CouponType.PERCENTAGE) {
       if (
-        totalChargeAmt -
-          (totalChargeAmt * userCoupon.coupon.discountValue) / 100 !==
-        finalChargeAmt
+        Number(userCoupon.coupon.discountValue).toFixed(2) !==
+        couponDiscountAmt.toFixed(2)
       ) {
         throw new ApiException(
-          ResponseCode.STATUS_7003_INVALID_TOTAL_CHARGE_AMT,
+          ResponseCode.STATUS_7008_INVALID_COUPON_DISCOUNT_AMT,
         );
       }
     }
+    //todo: percentage coupon not yet supported
+    if (userCoupon.coupon.type === CouponType.PERCENTAGE) {
+      throw new ApiException(ResponseCode.STATUS_7002_INVALID_USER_COUPON);
+    }
+
+    // if (userCoupon.coupon.type === CouponType.PERCENTAGE) {
+    //   if (
+    //     totalChargeAmt -
+    //       (totalChargeAmt * userCoupon.coupon.discountValue) / 100 !==
+    //     finalChargeAmt
+    //   ) {
+    //     throw new ApiException(
+    //       ResponseCode.STATUS_7003_INVALID_TOTAL_CHARGE_AMT,
+    //     );
+    //   }
+    // }
     return true;
+  }
+
+  async savePaymentIntent(entity: PaymentIntent) {
+    return await this.paymentIntentRepository.savePaymentIntent(entity);
+  }
+
+  async findOnePaymentIntentByStripePaymentIntentId(
+    stripePaymentIntentId: string,
+  ) {
+    return await this.paymentIntentRepository.findOnePaymentIntentByStripePaymentIntentIdAndIsDeletedFalse(
+      stripePaymentIntentId,
+    );
+  }
+
+  async saveStripeWebhook(entity: StripeWebhook) {
+    return await this.stripeWebhookRepository.saveStripeWebhook(entity);
   }
 }

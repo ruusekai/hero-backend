@@ -5,9 +5,10 @@ import { PaymentManager } from './payment.manager';
 import { UserModule } from '../user/user.module';
 import { TaskModule } from '../task/task.module';
 import { PaymentUtilModule } from '../../utils/payment/payment.util.module';
+import { MySqlRepositoryModule } from '../../database/mysql/repositories/mysql.repository.module';
 
 @Module({
-  imports: [UserModule, TaskModule, PaymentUtilModule],
+  imports: [UserModule, TaskModule, PaymentUtilModule, MySqlRepositoryModule],
   controllers: [PaymentController],
   providers: [PaymentManager, PaymentService],
 })

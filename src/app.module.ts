@@ -23,6 +23,9 @@ import ormConfig = require('./config/ormconfig');
 import { PaymentModule } from './modules/payment/payment.module';
 import { RawBodyMiddleware } from './common/middleware/raw-body.middleware';
 import { JsonBodyMiddleware } from './common/middleware/json-body.middleware';
+import { MessageModule } from './modules/message/message.module';
+import { MessageWebTestModule } from './modules/message-web-test/message-web-test.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -38,6 +41,9 @@ import { JsonBodyMiddleware } from './common/middleware/json-body.middleware';
     CountryModule,
     TaskModule,
     PaymentModule,
+    MessageModule,
+    MessageWebTestModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [

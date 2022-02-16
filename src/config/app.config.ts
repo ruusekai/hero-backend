@@ -62,4 +62,8 @@ export default () => ({
   file: {
     THUMBNAIL_SIZE_PX: process.env.FILE_THUMBNAIL_SIZE_PX || 300,
   },
+  message: {
+    FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
+    CMS_MESSAGE_API_KEY: process.env.CMS_MESSAGE_API_KEY,
+  },
 });

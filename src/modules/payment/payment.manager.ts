@@ -37,6 +37,9 @@ export class PaymentManager {
     let effectiveCouponDiscountAmt: number = null;
     let calcFinalChargeAmt: number = null;
 
+    if (taskEntity == null) {
+      throw new ApiException(ResponseCode.STATUS_7010_TASK_NOT_EXIST);
+    }
     if (
       taskEntity.paymentStatus === TaskPaymentStatus.SUCCEEDED ||
       taskEntity.paymentStatus === TaskPaymentStatus.REQUIRES_CAPTURE

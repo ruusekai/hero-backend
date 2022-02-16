@@ -134,7 +134,7 @@ export class ResponseCode {
     new ResponseStatus(
       7004,
       'hero的報酬不可低於任務成本的5%',
-      'the task is already paid',
+      'hero的報酬不可低於任務成本的5%',
     );
   public static readonly STATUS_7005_INVALID_CURRENT_LOCATION =
     new ResponseStatus(
@@ -162,6 +162,47 @@ export class ResponseCode {
     );
   public static readonly STATUS_7009_STRIPE_INVALID_WEBHOOK =
     new ResponseStatus(7009, 'invalid webhook', 'invalid webhook');
+
+  public static readonly STATUS_7010_TASK_NOT_EXIST = new ResponseStatus(
+    7010,
+    'task not exists',
+    'task not exists',
+  );
+
+  //messaging
+  public static readonly STATUS_8000_FIREBASE_ERROR = new ResponseStatus(
+    8000,
+    'firebase error',
+    'firebase error',
+  );
+
+  public static readonly STATUS_8001_MESSAGE_GROUP_NOT_EXIST =
+    new ResponseStatus(
+      8001,
+      'message group not exists',
+      'message group not exists',
+    );
+
+  public static readonly STATUS_8002_MESSAGE_GROUP_NOT_ACTIVE =
+    new ResponseStatus(
+      8002,
+      'message group not active',
+      'message group not active',
+    );
+
+  public static readonly STATUS_8003_USER_NOT_IN_MESSAGE_GROUP =
+    new ResponseStatus(
+      8003,
+      'user not in message group',
+      'user not in message group',
+    );
+
+  public static readonly STATUS_8004_MESSAGE_CONTENT_INVALID =
+    new ResponseStatus(
+      8004,
+      'message content invalid',
+      'message content invalid',
+    );
 
   //system error
   public static readonly STATUS_9999_SYSTEM_ERROR = new ResponseStatus(

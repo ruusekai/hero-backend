@@ -23,7 +23,7 @@ create table if not exists user
     updated_by int default 0 not null,
     constraint user_uuid_uindex
     unique (uuid)
-    );
+);
 
 create table if not exists user_basic_auth
 (

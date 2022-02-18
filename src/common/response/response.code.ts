@@ -204,6 +204,12 @@ export class ResponseCode {
       'message content invalid',
     );
 
+  public static readonly STATUS_8100_ONE_SIGNAL_ERROR = new ResponseStatus(
+    8100,
+    'one signal error',
+    'one signal error',
+  );
+
   //system error
   public static readonly STATUS_9999_SYSTEM_ERROR = new ResponseStatus(
     9999,

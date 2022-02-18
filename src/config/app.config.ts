@@ -66,4 +66,9 @@ export default () => ({
     FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
     CMS_MESSAGE_API_KEY: process.env.CMS_MESSAGE_API_KEY,
   },
+  push: {
+    ONE_SIGNAL_API_ENDPOINT: process.env.ONE_SIGNAL_API_ENDPOINT,
+    ONE_SIGNAL_APP_ID: process.env.ONE_SIGNAL_APP_ID,
+    ONE_SIGNAL_APP_KEY: process.env.ONE_SIGNAL_APP_KEY,
+  },
 });

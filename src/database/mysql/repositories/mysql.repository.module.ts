@@ -17,6 +17,8 @@ import { UserCouponRepository } from './user.coupon.repository';
 import { TaskRepository } from './task.repository';
 import { PaymentIntentRepository } from './payment.intent.repository';
 import { StripeWebhookRepository } from './stripe.webhook.repository';
+import { PushAudienceRepository } from './push.audience.repository';
+import { PushNotificationRepository } from './push.notification.repository';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { StripeWebhookRepository } from './stripe.webhook.repository';
       TaskRepository,
       PaymentIntentRepository,
       StripeWebhookRepository,
+      PushAudienceRepository,
+      PushNotificationRepository,
     ]),
   ],
   providers: [],

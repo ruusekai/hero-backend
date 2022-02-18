@@ -26,6 +26,7 @@ import { JsonBodyMiddleware } from './common/middleware/json-body.middleware';
 import { MessageModule } from './modules/message/message.module';
 import { MessageWebTestModule } from './modules/message-web-test/message-web-test.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { PushModule } from './modules/push/push.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { AdminModule } from './modules/admin/admin.module';
     MessageModule,
     MessageWebTestModule,
     AdminModule,
+    PushModule,
   ],
   controllers: [AppController],
   providers: [

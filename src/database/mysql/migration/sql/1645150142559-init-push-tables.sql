@@ -38,3 +38,19 @@ create table if not exists push_notification
     updated_by int default 0 not null
     );
 
+create table if not exists push_template
+(
+    id int auto_increment
+    primary key,
+    name varchar(255),
+    heading varchar(500),
+    content varchar(1000),
+    landing varchar(255),
+
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null
+);

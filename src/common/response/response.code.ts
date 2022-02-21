@@ -169,6 +169,13 @@ export class ResponseCode {
     'task not exists',
   );
 
+  public static readonly STATUS_7011_MATCHED_TASK_CANNOT_BE_CANCELLED_BY_BOSS =
+    new ResponseStatus(
+      7011,
+      'MATCHED_TASK_CANNOT_BE_CANCELLED_BY_BOSS',
+      'task not exists',
+    );
+
   //messaging
   public static readonly STATUS_8000_FIREBASE_ERROR = new ResponseStatus(
     8000,

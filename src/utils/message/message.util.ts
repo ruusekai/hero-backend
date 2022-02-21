@@ -49,6 +49,25 @@ export class MessageUtil {
     }
   }
 
+  async disableMessageGroup(
+    messageGroupId: string,
+    bossUuid: string,
+    heroUuid: string,
+  ) {
+    try {
+      const updates = {};
+      updates[`/groups/${messageGroupId}/active`] = false;
+      updates[`/users/${bossUuid}/groups/${messageGroupId}`] = false;
+      updates[`/users/${heroUuid}/groups/${messageGroupId}`] = false;
+
+      await this.db.ref().update(updates);
+      return true;
+    } catch (e) {
+      this.logger.error('Error disableMessageGroup:', e);
+      throw new ApiException(ResponseCode.STATUS_8000_FIREBASE_ERROR);
+    }
+  }
+
   async createMessage(
     messageGroupId: string,
     userUuid: string,
@@ -86,14 +105,6 @@ export class MessageUtil {
     }
   }
 
-  async getRandomNumberWithFourDigits(): Promise<string> {
-    //get random number from 0 - 9999
-    const randomNumber: number = Math.floor(Math.random() * 10000);
-    //add padding zeros
-    const orderSuffix: string = randomNumber.toString().padStart(4, '0');
-    return orderSuffix;
-  }
-
   async findMessageGroupIdByTaskUuidAndHeroUuid(
     taskUuid: string,
     heroUuid: string,
@@ -119,6 +130,8 @@ export class MessageUtil {
     taskUuid: string,
     bossUuid: string,
     heroUuid: string,
+    bossName: string,
+    heroName: string,
   ): Promise<string> {
     try {
       const existingGroupId: string =
@@ -126,23 +139,18 @@ export class MessageUtil {
       if (existingGroupId != null && existingGroupId !== 'null') {
         return existingGroupId;
       }
-      const randomBossName: string =
-        'boss-' + (await this.getRandomNumberWithFourDigits());
-      const randomHeroName: string =
-        'hero-' + (await this.getRandomNumberWithFourDigits());
-
       const groupData = {
         //taskUuid
         task: taskUuid,
         active: true,
         boss: {
           id: bossUuid,
-          name: randomBossName,
+          name: bossName,
           role: 'boss',
         },
         hero: {
           id: heroUuid,
-          name: randomHeroName,
+          name: heroName,
           role: 'hero',
         },
         lastMessage: null,
@@ -156,12 +164,6 @@ export class MessageUtil {
           bossUuid +
           ',newMessageGroupKey: ' +
           newMessageGroupKey,
-      );
-      this.logger.log(
-        'bossUuid: ' + bossUuid + ',randomBossName: ' + randomBossName,
-      );
-      this.logger.log(
-        'heroUuid: ' + bossUuid + ',randomHeroName: ' + randomHeroName,
       );
 
       // Write the new post's data simultaneously in the posts list and the user's post list.

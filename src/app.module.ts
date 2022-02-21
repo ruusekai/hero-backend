@@ -27,6 +27,7 @@ import { MessageModule } from './modules/message/message.module';
 import { MessageWebTestModule } from './modules/message-web-test/message-web-test.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { PushModule } from './modules/push/push.module';
+import { TaskMatchingAttemptModule } from './task-matching-attempt/task-matching-attempt.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { PushModule } from './modules/push/push.module';
     MessageWebTestModule,
     AdminModule,
     PushModule,
+    TaskMatchingAttemptModule,
   ],
   controllers: [AppController],
   providers: [

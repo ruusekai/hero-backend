@@ -30,6 +30,11 @@ create table if not exists task
 
     payment_status varchar(255) default 'pending' not null,
 
+    payment_intent_id varchar(255),
+    post_status varchar(255) default 'available' not null,
+    message_group_id varchar(255),
+    hero_user_uuid varchar(255),
+
     is_deleted int default 0 not null,
     version int default 1 not null,
     record_state int default 0 not null,
@@ -44,27 +49,98 @@ create table if not exists task
 );
 
 
---
--- create table if not exists task_hero_offer
--- (
---     id int auto_increment
---     primary key,
---     uuid varchar(255) not null,
---     task_uuid varchar(255) not null,
---     message_group_id varchar(255) not null,
---
---     is_deleted int default 0 not null,
---     version int default 1 not null,
---     record_state int default 0 not null,
---     created_date timestamp default CURRENT_TIMESTAMP not null,
---     updated_date timestamp default CURRENT_TIMESTAMP not null,
---     created_by int default 0 not null,
---     updated_by int default 0 not null,
---     constraint task_user_uuid_fk
---     foreign key (boss_user_uuid) references user (uuid),
---     constraint task_uuid_uindex
---     unique (uuid)
---     );
+create table if not exists task_matching_attempt
+(
+    id int auto_increment
+    primary key,
+    message_group_id varchar(255) not null,
+    hero_user_uuid varchar(255) not null,
+    hero_name varchar(255) not null,
+    boss_user_uuid varchar(255) not null,
+    boss_name varchar(255) not null,
+    task_uuid varchar(255) not null,
+    is_matched int default 0 not null,
+    status varchar(255) not null,
+    is_message_group_active int default 0 not null,
+
+    is_boss_reviewed int default 0 not null,
+    is_hero_reviewed int default 0 not null,
+
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    record_state int default 0 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint task_matching_attempt_boss_uuid_fk
+    foreign key (boss_user_uuid) references user (uuid),
+    constraint task_matching_attempt_hero_uuid_fk
+    foreign key (hero_user_uuid) references user (uuid),
+    constraint task_matching_attempt_task_uuid_fk
+    foreign key (task_uuid) references task (uuid),
+    constraint tma_message_group_id_uindex
+    unique (message_group_id)
+    );
+
+
+
+create table if not exists task_matching_attempt_history
+(
+    id int auto_increment
+    primary key,
+    message_group_id varchar(255) not null,
+    user_uuid varchar(255),
+    user_role varchar(255),
+    action_type varchar(255),
+    old_status varchar(255),
+    new_status varchar(255),
+
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    record_state int default 0 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint tmah_user_uuid_fk
+    foreign key (user_uuid) references user (uuid),
+    constraint tmah_message_group_id_fk
+    foreign key (message_group_id) references task_matching_attempt (message_group_id),
+    constraint tmah_message_group_id_uindex
+    unique (message_group_id)
+    );
+
+
+create table if not exists review
+(
+    id int auto_increment
+    primary key,
+    uuid varchar(255) not null,
+    message_group_id varchar(255) not null,
+    from_user_uuid varchar(255) not null,
+    from_user_role varchar(255) not null,
+    from_user_name varchar(255) not null,
+    target_user_uuid varchar(255) not null,
+    target_user_role varchar(255) not null,
+    target_user_name varchar(255) not null,
+    score int not null,
+    description varchar(1000) not null,
+
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    record_state int default 0 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint review_from_user_uuid_fk
+    foreign key (from_user_uuid) references user (uuid),
+    constraint review_target_user_uuid_fk
+    foreign key (target_user_uuid) references user (uuid),
+    constraint review_uuid_uindex
+    unique (uuid)
+    );
 
 create table if not exists payment_intent
 (
@@ -148,7 +224,6 @@ create table if not exists user_coupon
     expiry_date timestamp,
     is_deleted int default 0 not null,
     version int default 1 not null,
-    record_state int default 0 not null,
     created_date timestamp default CURRENT_TIMESTAMP not null,
     updated_date timestamp default CURRENT_TIMESTAMP not null,
     created_by int default 0 not null,

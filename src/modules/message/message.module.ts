@@ -7,7 +7,7 @@ import { TaskModule } from '../task/task.module';
 import { MySqlRepositoryModule } from '../../database/mysql/repositories/mysql.repository.module';
 
 @Module({
-  imports: [MessageUtilModule, TaskModule, MySqlRepositoryModule],
+  imports: [MessageUtilModule, MySqlRepositoryModule],
   controllers: [MessageController],
   providers: [MessageManager, MessageService],
   exports: [MessageService],

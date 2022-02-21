@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateTaskDto } from './dto/request/update.task.dto';
 import { CreateTaskDto } from './dto/request/create.task.dto';
 import { Task } from '../../database/mysql/entities/task.entity';
 import { TaskDto } from './dto/entity/task.dto';
@@ -7,10 +6,22 @@ import { TaskRepository } from '../../database/mysql/repositories/task.repositor
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { TaskPaymentStatus } from './enum/task.payment.status';
+import { TaskMatchingAttemptStatus } from './enum/matching-attempt-status';
+import { MessageService } from '../message/message.service';
+import { TaskMatchingAttemptRepository } from '../../database/mysql/repositories/task.matching.attempt.repository';
+import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
+import { MessageUserRoleType } from '../message/enum/message-user-role-type';
+import { PushService } from '../push/push.service';
+import { PushTemplate } from '../../database/mysql/entities/push.template.entity';
 
 @Injectable()
 export class TaskService {
-  constructor(private readonly taskRepository: TaskRepository) {}
+  constructor(
+    private readonly taskRepository: TaskRepository,
+    private readonly taskMatchingAttemptRepository: TaskMatchingAttemptRepository,
+    private readonly messageService: MessageService,
+    private readonly pushService: PushService,
+  ) {}
   async create(
     bossUserUuid: string,
     createTaskDto: CreateTaskDto,
@@ -59,10 +70,6 @@ export class TaskService {
     return `This action returns all task`;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
-  }
-
   remove(id: number) {
     return `This action removes a #${id} task`;
   }
@@ -71,11 +78,11 @@ export class TaskService {
     return await this.taskRepository.saveTask(task);
   }
 
-  async findApprovedTaskWithRawPaginate(
+  async findApprovedAndPaidAndAvailableTaskWithRawPaginate(
     queryInput: any,
     iPaginationOptions: IPaginationOptions,
   ): Promise<any> {
-    return await this.taskRepository.findApprovedTaskByQueryInputAndIsDeletedFalseWithPaginate(
+    return await this.taskRepository.findApprovedAndPaidAndAvailableTaskByQueryInputAndIsDeletedFalseWithPaginate(
       queryInput,
       iPaginationOptions,
     );
@@ -85,5 +92,36 @@ export class TaskService {
     return await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(
       taskUuid,
     );
+  }
+
+  async findTaskMatchingAttemptListByTaskUuid(taskUuid: string) {
+    return await this.taskMatchingAttemptRepository.findTaskMatchingAttemptByTaskUuid(
+      taskUuid,
+    );
+  }
+
+  async saveTaskMatchingAttemptByList(entityList: TaskMatchingAttempt[]) {
+    return await this.taskMatchingAttemptRepository.saveTaskMatchingAttemptByList(
+      entityList,
+    );
+  }
+
+  async disableMatchingAttemptAndCloseMessageGroupByList(
+    entityList: TaskMatchingAttempt[],
+    status: TaskMatchingAttemptStatus,
+  ) {
+    entityList = await Promise.all(
+      entityList.map(async (matchingAttemptEntity) => {
+        await this.messageService.disableMessageGroupById(
+          matchingAttemptEntity.messageGroupId,
+        );
+        matchingAttemptEntity.isMatched = false;
+        matchingAttemptEntity.isMessageGroupActive = false;
+        matchingAttemptEntity.status = status;
+        return matchingAttemptEntity;
+      }),
+    );
+    await this.saveTaskMatchingAttemptByList(entityList);
+    return true;
   }
 }

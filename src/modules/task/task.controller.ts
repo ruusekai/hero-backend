@@ -34,8 +34,8 @@ export class TaskController {
     return this.taskManager.findAllWithQueryOptions(findTaskReqDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.taskService.update(+id, updateTaskDto);
+  @Delete(':taskUuid')
+  cancelTaskByBoss(@Request() req, @Param('taskUuid') taskUuid: string) {
+    return this.taskManager.cancelTaskByBoss(req.user.uuid, taskUuid);
   }
 }

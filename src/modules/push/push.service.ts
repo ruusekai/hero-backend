@@ -1,6 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreatePushDto } from './dto/request/create-push.dto';
-import { UpdatePushDto } from './dto/request/update-push.dto';
 import { PushLanding } from '../../utils/push/enum/push-landing';
 import { PushUtil } from '../../utils/push/push.util';
 import { PushAudienceRepository } from '../../database/mysql/repositories/push.audience.repository';
@@ -9,6 +7,9 @@ import { PushNotification } from '../../database/mysql/entities/push.notificatio
 import { PushMessageDto } from '../../utils/push/dto/entity/push-message-dto';
 import { ConfigService } from '@nestjs/config';
 import { PushNotificationRepository } from '../../database/mysql/repositories/push.notification.repository';
+import { PushTemplateName } from '../../common/enum/push.template.name';
+import { PushTemplateRepository } from '../../database/mysql/repositories/push.template.repository';
+import { PushTemplate } from '../../database/mysql/entities/push.template.entity';
 
 @Injectable()
 export class PushService {
@@ -19,11 +20,34 @@ export class PushService {
     private readonly pushUtil: PushUtil,
     private readonly pushAudienceRepository: PushAudienceRepository,
     private readonly pushNotificationRepository: PushNotificationRepository,
+    private readonly pushTemplateRepository: PushTemplateRepository,
   ) {
     this.appId = this.configService.get<string>('push.ONE_SIGNAL_APP_ID');
   }
 
   private readonly logger = new Logger(PushService.name);
+
+  async createNotificationByTemplate(
+    userUuid: string,
+    templateName: PushTemplateName,
+    landingRefId: string,
+  ) {
+    const template: PushTemplate = await this.findOnePushTemplateByName(
+      templateName,
+    );
+    if (template == null) {
+      this.logger.error(
+        '[PushService][createNotificationByTemplate] template not found!',
+      );
+    }
+    await this.createNotification(
+      userUuid,
+      template.heading,
+      template.content,
+      template.landing,
+      landingRefId,
+    );
+  }
 
   async createNotification(
     userUuid: string,
@@ -99,5 +123,9 @@ export class PushService {
 
   async viewDeviceOnOneSignal(playerId: string) {
     return await this.pushUtil.viewDevice(playerId);
+  }
+
+  async findOnePushTemplateByName(name: PushTemplateName) {
+    return await this.pushTemplateRepository.findOnePushTemplateByName(name);
   }
 }

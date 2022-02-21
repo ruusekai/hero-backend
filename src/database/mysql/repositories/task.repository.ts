@@ -1,25 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import {
-  Between,
-  EntityRepository,
-  FindManyOptions,
-  getManager,
-  getRepository,
-  In,
-  Repository,
-} from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { ResponseCode } from '../../../common/response/response.code';
 import { ApiException } from '../../../common/exception/api.exception';
 import { Task } from '../entities/task.entity';
 import { AdminApprovalStatus } from '../../../common/enum/admin.approval.status';
-import {
-  IPaginationOptions,
-  paginate,
-  paginateRaw,
-  Pagination,
-} from 'nestjs-typeorm-paginate';
+import { IPaginationOptions, paginateRaw } from 'nestjs-typeorm-paginate';
 import { TaskOrderByColumn } from '../../../modules/task/dto/enum/task.order.by.column';
 import { OrderDirection } from '../../../modules/task/dto/enum/order.direction';
+import { TaskPaymentStatus } from '../../../modules/task/enum/task.payment.status';
+import { TaskPostStatus } from '../../../modules/task/enum/task-post-status';
 
 @EntityRepository(Task)
 @Injectable()
@@ -70,7 +59,7 @@ export class TaskRepository extends Repository<Task> {
   //   }
   // }
 
-  async findApprovedTaskByQueryInputAndIsDeletedFalseWithPaginate(
+  async findApprovedAndPaidAndAvailableTaskByQueryInputAndIsDeletedFalseWithPaginate(
     queryInput: any,
     iPaginationOptions: IPaginationOptions,
   ) {
@@ -79,6 +68,15 @@ export class TaskRepository extends Repository<Task> {
         'task.adminStatus = :adminStatus',
         { adminStatus: AdminApprovalStatus.APPROVED },
       );
+      queryBuilder.andWhere('task.payment_status IN (:...paymentStatus)', {
+        paymentStatus: [
+          TaskPaymentStatus.REQUIRES_CAPTURE,
+          TaskPaymentStatus.SUCCEEDED,
+        ],
+      });
+      queryBuilder.andWhere('task.matching_status = :matchingStatus', {
+        matchingStatus: TaskPostStatus.AVAILABLE,
+      });
 
       //ordering
       if (queryInput.orderBy === TaskOrderByColumn.DISTANCE) {

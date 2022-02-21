@@ -6,9 +6,18 @@ import { MySqlRepositoryModule } from '../../database/mysql/repositories/mysql.r
 import { ConfigModule } from '@nestjs/config';
 import { PaymentUtilModule } from '../../utils/payment/payment.util.module';
 import { UserModule } from '../user/user.module';
+import { MessageModule } from '../message/message.module';
+import { PushModule } from '../push/push.module';
 
 @Module({
-  imports: [MySqlRepositoryModule, ConfigModule, UserModule, PaymentUtilModule],
+  imports: [
+    MySqlRepositoryModule,
+    ConfigModule,
+    UserModule,
+    PaymentUtilModule,
+    MessageModule,
+    PushModule,
+  ],
   controllers: [TaskController],
   providers: [TaskManager, TaskService],
   exports: [TaskService],

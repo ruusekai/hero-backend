@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { UpdateTaskDto } from './dto/request/update.task.dto';
 import { CreateTaskDto } from './dto/request/create.task.dto';
 import { UserService } from '../user/user.service';
 import { AppResponse } from '../../common/response/app.response';
@@ -13,6 +12,12 @@ import { OrderDirection } from './dto/enum/order.direction';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
 import { TaskOrderByColumn } from './dto/enum/task.order.by.column';
+import { Task } from '../../database/mysql/entities/task.entity';
+import { TaskPostStatus } from './enum/task-post-status';
+import { TaskMatchingAttemptStatus } from './enum/matching-attempt-status';
+import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
+import { MessageUserRoleType } from '../message/enum/message-user-role-type';
+import { PushTemplateName } from '../../common/enum/push.template.name';
 
 @Injectable()
 export class TaskManager {
@@ -87,10 +92,14 @@ export class TaskManager {
       ? findTaskReqDto.orderDirection
       : OrderDirection.ASC;
 
-    const response = await this.taskService.findApprovedTaskWithRawPaginate(
-      options,
-      { page: findTaskReqDto.page, limit: findTaskReqDto.limit },
-    );
+    const response =
+      await this.taskService.findApprovedAndPaidAndAvailableTaskWithRawPaginate(
+        options,
+        {
+          page: findTaskReqDto.page,
+          limit: findTaskReqDto.limit,
+        },
+      );
     const taskDtoList: TaskDto[] = await Promise.all(
       response.items.map(async (taskRawData) => {
         const taskDto: TaskDto = new TaskDto(
@@ -136,11 +145,37 @@ export class TaskManager {
     return `This action returns a #${id} task`;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
-  }
+  async cancelTaskByBoss(userUuid: string, taskUuid: string) {
+    const taskEntity: Task = await this.taskService.findOneTaskByUuid(taskUuid);
+    this.logger.log(
+      `[cancelTaskByBoss] trying to cancel posting of task: ${JSON.stringify(
+        taskEntity,
+      )}`,
+    );
+    if (taskEntity == null) {
+      throw new ApiException(ResponseCode.STATUS_7010_TASK_NOT_EXIST);
+    } else if (taskEntity.bossUserUuid !== userUuid) {
+      throw new ApiException(ResponseCode.STATUS_4013_FORBIDDEN);
+    } else if (taskEntity.heroUserUuid != null) {
+      this.logger.error(`[cancelTaskByBoss] matched task cannot be cancelled`);
+      throw new ApiException(
+        ResponseCode.STATUS_7011_MATCHED_TASK_CANNOT_BE_CANCELLED_BY_BOSS,
+      );
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+    //set all matching attempt to boss_cancelled, disable those chatrooms
+    const matchingAttemptList: TaskMatchingAttempt[] =
+      await this.taskService.findTaskMatchingAttemptListByTaskUuid(taskUuid);
+    //todo: send noti???
+    await this.taskService.disableMatchingAttemptAndCloseMessageGroupByList(
+      matchingAttemptList,
+      TaskMatchingAttemptStatus.BOSS_CANCEL_MATCHING,
+    );
+
+    //set task as post_status = ‘boss-cancelled’
+    taskEntity.postStatus = TaskPostStatus.BOSS_CANCELLED;
+    await this.taskService.saveTask(taskEntity);
+
+    return new AppResponse();
   }
 }

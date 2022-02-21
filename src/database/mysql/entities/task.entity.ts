@@ -5,6 +5,7 @@ import { AdminApprovalStatus } from '../../../common/enum/admin.approval.status'
 import { AdminDeclineReason } from '../../../common/enum/admin.decline.reason';
 import { TaskCategory } from '../../../modules/task/enum/task.category';
 import { TaskPaymentStatus } from '../../../modules/task/enum/task.payment.status';
+import { TaskPostStatus } from '../../../modules/task/enum/task-post-status';
 
 @Entity()
 export class Task extends BaseEntity {
@@ -110,6 +111,18 @@ export class Task extends BaseEntity {
 
   @Column({ name: 'payment_status' })
   paymentStatus: TaskPaymentStatus;
+
+  @Column({ name: 'payment_intent_id' })
+  paymentIntentId: string;
+
+  @Column({ name: 'post_status' })
+  postStatus: TaskPostStatus;
+
+  @Column({ name: 'message_group_id' })
+  messageGroupId: string;
+
+  @Column({ name: 'hero_user_uuid' })
+  heroUserUuid: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'boss_user_uuid', referencedColumnName: 'uuid' })

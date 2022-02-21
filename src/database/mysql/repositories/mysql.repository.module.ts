@@ -19,6 +19,8 @@ import { PaymentIntentRepository } from './payment.intent.repository';
 import { StripeWebhookRepository } from './stripe.webhook.repository';
 import { PushAudienceRepository } from './push.audience.repository';
 import { PushNotificationRepository } from './push.notification.repository';
+import { TaskMatchingAttemptRepository } from './task.matching.attempt.repository';
+import { PushTemplateRepository } from './push.template.repository';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { PushNotificationRepository } from './push.notification.repository';
       StripeWebhookRepository,
       PushAudienceRepository,
       PushNotificationRepository,
+      PushTemplateRepository,
+      TaskMatchingAttemptRepository,
     ]),
   ],
   providers: [],

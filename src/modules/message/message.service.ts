@@ -24,11 +24,15 @@ export class MessageService {
     taskUuid: string,
     heroUuid: string,
     bossUuid: string,
+    bossName: string,
+    heroName: string,
   ) {
     return await this.messageUtil.createMessageGroup(
       taskUuid,
       bossUuid,
       heroUuid,
+      bossName,
+      heroName,
     );
   }
 
@@ -71,5 +75,27 @@ export class MessageService {
     messageGroupId: string,
   ): Promise<FirebaseGroupDto> {
     return await this.messageUtil.findMessageGroupById(messageGroupId);
+  }
+
+  async disableMessageGroupById(messageGroupId: string): Promise<boolean> {
+    const group: FirebaseGroupDto = await this.messageUtil.findMessageGroupById(
+      messageGroupId,
+    );
+    if (group == null) {
+      throw new ApiException(ResponseCode.STATUS_8001_MESSAGE_GROUP_NOT_EXIST);
+    }
+    return await this.messageUtil.disableMessageGroup(
+      messageGroupId,
+      group.boss.id,
+      group.hero.id,
+    );
+  }
+
+  async getRandomNumberWithFourDigits(): Promise<string> {
+    //get random number from 0 - 9999
+    const randomNumber: number = Math.floor(Math.random() * 10000);
+    //add padding zeros
+    const orderSuffix: string = randomNumber.toString().padStart(4, '0');
+    return orderSuffix;
   }
 }

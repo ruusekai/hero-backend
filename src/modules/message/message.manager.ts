@@ -11,12 +11,17 @@ import { MessageUserRoleType } from './enum/message-user-role-type';
 import { MessageType } from './enum/message-type';
 import { CreateMessageRspDto } from './dto/response/create-message-rsp-dto';
 import { CreateCustomTokenRspDto } from './dto/response/create-custom-token-rsp-dto';
+import { TaskMatchingAttemptStatus } from '../task/enum/matching-attempt-status';
+import { TaskRepository } from '../../database/mysql/repositories/task.repository';
+import { TaskMatchingAttemptRepository } from '../../database/mysql/repositories/task.matching.attempt.repository';
+import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
 
 @Injectable()
 export class MessageManager {
   constructor(
     private readonly messageService: MessageService,
-    private readonly taskService: TaskService,
+    private readonly taskRepository: TaskRepository,
+    private readonly taskMatchingAttemptRepository: TaskMatchingAttemptRepository,
   ) {}
   async createCustomToken(userUuid: string): Promise<AppResponse> {
     const customToken: string = await this.messageService.createCustomToken(
@@ -29,7 +34,8 @@ export class MessageManager {
     taskUuid: string,
     heroUuid: string,
   ): Promise<AppResponse> {
-    const task: Task = await this.taskService.findOneTaskByUuid(taskUuid);
+    const task: Task =
+      await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(taskUuid);
     if (task == null) {
       throw new ApiException(ResponseCode.STATUS_7010_TASK_NOT_EXIST);
     }
@@ -37,10 +43,33 @@ export class MessageManager {
       throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
     }
 
+    const bossRandomName: string =
+      'boss-' + (await this.messageService.getRandomNumberWithFourDigits());
+    const heroRandomName: string =
+      'hero-' + (await this.messageService.getRandomNumberWithFourDigits());
+
     const newMessageGroupKey = await this.messageService.createMessageGroup(
       taskUuid,
       heroUuid,
       task.bossUserUuid,
+      bossRandomName,
+      heroRandomName,
+    );
+
+    //create new task matching attempt with status = CREATED_MESSAGE_GROUP
+    const matchingAttempt: TaskMatchingAttempt = new TaskMatchingAttempt(
+      newMessageGroupKey,
+      taskUuid,
+      heroUuid,
+      heroRandomName,
+      task.bossUserUuid,
+      bossRandomName,
+      false,
+      TaskMatchingAttemptStatus.CREATED_MESSAGE_GROUP,
+      true,
+    );
+    await this.taskMatchingAttemptRepository.saveOneTaskMatchingAttempt(
+      matchingAttempt,
     );
     return new AppResponse(new CreateMessageGroupRspDto(newMessageGroupKey));
   }

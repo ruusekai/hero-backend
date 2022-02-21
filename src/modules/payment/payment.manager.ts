@@ -109,7 +109,7 @@ export class PaymentManager {
     paymentIntentEntity.effectiveCouponDiscountAmt = effectiveCouponDiscountAmt;
     paymentIntentEntity.totalChargeAmt = taskEntity.totalChargeAmt;
     paymentIntentEntity.finalChargeAmt = calcFinalChargeAmt;
-    paymentIntentEntity.currency = taskEntity.category;
+    paymentIntentEntity.currency = paymentIntent.currency;
     paymentIntentEntity.stripePaymentMethodTypes = JSON.stringify(
       paymentIntent.payment_method_types,
     );

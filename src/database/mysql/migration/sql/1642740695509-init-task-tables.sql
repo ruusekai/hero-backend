@@ -37,7 +37,6 @@ create table if not exists task
 
     is_deleted int default 0 not null,
     version int default 1 not null,
-    record_state int default 0 not null,
     created_date timestamp default CURRENT_TIMESTAMP not null,
     updated_date timestamp default CURRENT_TIMESTAMP not null,
     created_by int default 0 not null,
@@ -68,7 +67,6 @@ create table if not exists task_matching_attempt
 
     is_deleted int default 0 not null,
     version int default 1 not null,
-    record_state int default 0 not null,
     created_date timestamp default CURRENT_TIMESTAMP not null,
     updated_date timestamp default CURRENT_TIMESTAMP not null,
     created_by int default 0 not null,
@@ -85,11 +83,12 @@ create table if not exists task_matching_attempt
 
 
 
-create table if not exists task_matching_attempt_history
+create table if not exists task_history
 (
     id int auto_increment
     primary key,
-    message_group_id varchar(255) not null,
+    task_uuid varchar(255) not null,
+    message_group_id varchar(255),
     user_uuid varchar(255),
     user_role varchar(255),
     action_type varchar(255),
@@ -98,17 +97,16 @@ create table if not exists task_matching_attempt_history
 
     is_deleted int default 0 not null,
     version int default 1 not null,
-    record_state int default 0 not null,
     created_date timestamp default CURRENT_TIMESTAMP not null,
     updated_date timestamp default CURRENT_TIMESTAMP not null,
     created_by int default 0 not null,
     updated_by int default 0 not null,
-    constraint tmah_user_uuid_fk
+    constraint task_history_user_uuid_fk
     foreign key (user_uuid) references user (uuid),
-    constraint tmah_message_group_id_fk
+    constraint task_history_message_group_id_fk
     foreign key (message_group_id) references task_matching_attempt (message_group_id),
-    constraint tmah_message_group_id_uindex
-    unique (message_group_id)
+    constraint task_history_task_uuid_fk
+    foreign key (task_uuid) references task (uuid)
     );
 
 
@@ -129,7 +127,6 @@ create table if not exists review
 
     is_deleted int default 0 not null,
     version int default 1 not null,
-    record_state int default 0 not null,
     created_date timestamp default CURRENT_TIMESTAMP not null,
     updated_date timestamp default CURRENT_TIMESTAMP not null,
     created_by int default 0 not null,
@@ -204,7 +201,6 @@ create table if not exists coupon
     currency varchar(255) not null default 'HKD',
     is_deleted int default 0 not null,
     version int default 1 not null,
-    record_state int default 0 not null,
     created_date timestamp default CURRENT_TIMESTAMP not null,
     updated_date timestamp default CURRENT_TIMESTAMP not null,
     created_by int default 0 not null,

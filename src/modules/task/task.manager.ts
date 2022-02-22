@@ -16,8 +16,12 @@ import { Task } from '../../database/mysql/entities/task.entity';
 import { TaskPostStatus } from './enum/task-post-status';
 import { TaskMatchingAttemptStatus } from './enum/matching-attempt-status';
 import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
+import { TaskMatchingAttemptService } from '../../task-matching-attempt/task-matching-attempt.service';
 import { MessageUserRoleType } from '../message/enum/message-user-role-type';
-import { PushTemplateName } from '../../common/enum/push.template.name';
+import { PaymentService } from '../payment/payment.service';
+import { TaskHistory } from '../../database/mysql/entities/task.history.entity';
+import { MatchingHistoryActionType } from './enum/matching-history-action-type';
+import { TaskPaymentStatus } from './enum/task.payment.status';
 
 @Injectable()
 export class TaskManager {
@@ -25,6 +29,8 @@ export class TaskManager {
     private readonly taskService: TaskService,
     private readonly userService: UserService,
     private readonly paymentUtil: PaymentUtil,
+    private readonly matchingAttemptService: TaskMatchingAttemptService,
+    private readonly paymentService: PaymentService,
   ) {}
 
   private readonly logger = new Logger(TaskManager.name);
@@ -40,7 +46,20 @@ export class TaskManager {
       createTaskDto.totalChargeAmt,
     );
     //todo; checkings
-    const rsp = await this.taskService.create(bossUuid, createTaskDto);
+    const rsp: TaskDto = await this.taskService.create(bossUuid, createTaskDto);
+
+    //save  history
+    const historyEntity: TaskHistory = new TaskHistory(
+      rsp.taskUuid,
+      null,
+      rsp.bossUserUuid,
+      MessageUserRoleType.BOSS,
+      MatchingHistoryActionType.CREATE_TASK,
+      null,
+      null,
+    );
+    await this.matchingAttemptService.saveTaskHistory(historyEntity);
+
     return new AppResponse(rsp);
   }
 
@@ -146,7 +165,7 @@ export class TaskManager {
   }
 
   async cancelTaskByBoss(userUuid: string, taskUuid: string) {
-    const taskEntity: Task = await this.taskService.findOneTaskByUuid(taskUuid);
+    let taskEntity: Task = await this.taskService.findOneTaskByUuid(taskUuid);
     this.logger.log(
       `[cancelTaskByBoss] trying to cancel posting of task: ${JSON.stringify(
         taskEntity,
@@ -165,17 +184,59 @@ export class TaskManager {
 
     //set all matching attempt to boss_cancelled, disable those chatrooms
     const matchingAttemptList: TaskMatchingAttempt[] =
-      await this.taskService.findTaskMatchingAttemptListByTaskUuid(taskUuid);
+      await this.matchingAttemptService.findTaskMatchingAttemptListByTaskUuid(
+        taskUuid,
+      );
     //todo: send noti???
-    await this.taskService.disableMatchingAttemptAndCloseMessageGroupByList(
+    await this.matchingAttemptService.disableMatchingAttemptAndCloseMessageGroupAndCreateHistoryByList(
       matchingAttemptList,
       TaskMatchingAttemptStatus.BOSS_CANCEL_MATCHING,
+      MessageUserRoleType.BOSS,
     );
 
     //set task as post_status = ‘boss-cancelled’
-    taskEntity.postStatus = TaskPostStatus.BOSS_CANCELLED;
+    taskEntity.postStatus = TaskPostStatus.BOSS_CANCEL_MATCHING;
     await this.taskService.saveTask(taskEntity);
 
-    return new AppResponse();
+    if (taskEntity.paymentIntentId != null) {
+      if (Date.now() > taskEntity.expiryDate.getTime()) {
+        this.logger.log(
+          `[cancelTaskByBoss] task expired, cancelPaymentWithoutCapture, taskUuid: ${taskEntity.id}, paymentIntentId: ${taskEntity.paymentIntentId}`,
+        );
+        await this.paymentService.cancelPaymentWithoutCapture(taskEntity);
+      } else if (
+        taskEntity.paymentStatus === TaskPaymentStatus.REQUIRES_PAYMENT_METHOD
+      ) {
+        this.logger.log(
+          `[cancelTaskByBoss] paymentStatus = REQUIRES_PAYMENT_METHOD, cancelPaymentWithoutCapture, taskUuid: ${taskEntity.id}, paymentIntentId: ${taskEntity.paymentIntentId}`,
+        );
+        taskEntity = await this.paymentService.cancelPaymentWithoutCapture(
+          taskEntity,
+        );
+      } else {
+        this.logger.log(
+          `[cancelTaskByBoss] task NOT expired, capturePartialPaymentOfCancelledTask, taskUuid: ${taskEntity.id}, paymentIntentId: ${taskEntity.paymentIntentId}`,
+        );
+        taskEntity =
+          await this.paymentService.capturePartialPaymentOfCancelledTask(
+            taskEntity,
+          );
+      }
+    }
+
+    //add history
+    //save  history
+    const historyEntity: TaskHistory = new TaskHistory(
+      taskEntity.uuid,
+      taskEntity.messageGroupId,
+      taskEntity.bossUserUuid,
+      MessageUserRoleType.BOSS,
+      MatchingHistoryActionType.BOSS_CANCEL_MATCHING,
+      null,
+      null,
+    );
+    await this.matchingAttemptService.saveTaskHistory(historyEntity);
+
+    return new AppResponse(taskEntity);
   }
 }

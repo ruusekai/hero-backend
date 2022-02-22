@@ -51,7 +51,7 @@ export class PaymentUtil {
       this.logger.log('customer created, id: ' + customer.id);
       return customer;
     } catch (e) {
-      console.log(JSON.stringify(e.stack));
+      this.logger.log(JSON.stringify(e.stack));
       throw new ApiException(ResponseCode.STATUS_7007_STRIPE_ERROR, e);
     }
   }
@@ -101,7 +101,7 @@ export class PaymentUtil {
       });
       return paymentIntent;
     } catch (e) {
-      console.log(JSON.stringify(e.stack));
+      this.logger.log(JSON.stringify(e.stack));
       throw new ApiException(ResponseCode.STATUS_7007_STRIPE_ERROR, e);
     }
   }
@@ -134,8 +134,23 @@ export class PaymentUtil {
         paymentIntentId,
         { amount_to_capture: amount },
       );
+      this.logger.log(`paymentIntent: ${JSON.stringify(paymentIntent)}`);
+      return paymentIntent;
     } catch (e) {
-      console.log(JSON.stringify(e.stack));
+      this.logger.log(JSON.stringify(e.stack));
+      throw new ApiException(ResponseCode.STATUS_7007_STRIPE_ERROR, e);
+    }
+  }
+
+  async cancelPaymentIntent(paymentIntentId: string) {
+    try {
+      const paymentIntent = await this.stripe.paymentIntents.cancel(
+        paymentIntentId,
+      );
+      this.logger.log(`paymentIntent: ${JSON.stringify(paymentIntent)}`);
+      return paymentIntent;
+    } catch (e) {
+      this.logger.log(JSON.stringify(e.stack));
       throw new ApiException(ResponseCode.STATUS_7007_STRIPE_ERROR, e);
     }
   }

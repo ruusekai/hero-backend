@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { TaskMatchingAttemptStatus } from '../../../modules/task/enum/matching-attempt-status';
+import { Task } from './task.entity';
 
 @Entity()
 export class TaskMatchingAttempt extends BaseEntity {
@@ -59,4 +60,8 @@ export class TaskMatchingAttempt extends BaseEntity {
 
   @Column({ name: 'is_boss_reviewed' })
   isBossReviewed: string;
+
+  @ManyToOne(() => Task)
+  @JoinColumn({ name: 'task_uuid', referencedColumnName: 'uuid' })
+  task: Task;
 }

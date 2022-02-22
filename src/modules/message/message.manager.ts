@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { Task } from '../../database/mysql/entities/task.entity';
 import { TaskService } from '../task/task.service';
@@ -15,9 +15,13 @@ import { TaskMatchingAttemptStatus } from '../task/enum/matching-attempt-status'
 import { TaskRepository } from '../../database/mysql/repositories/task.repository';
 import { TaskMatchingAttemptRepository } from '../../database/mysql/repositories/task.matching.attempt.repository';
 import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
+import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
+import { TaskPaymentStatus } from '../task/enum/task.payment.status';
 
 @Injectable()
 export class MessageManager {
+  private readonly logger = new Logger(MessageManager.name);
+
   constructor(
     private readonly messageService: MessageService,
     private readonly taskRepository: TaskRepository,
@@ -38,11 +42,22 @@ export class MessageManager {
       await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(taskUuid);
     if (task == null) {
       throw new ApiException(ResponseCode.STATUS_7010_TASK_NOT_EXIST);
+    } else if (heroUuid === task.bossUserUuid) {
+      throw new ApiException(ResponseCode.STATUS_4013_FORBIDDEN);
+    } else if (task.adminStatus !== AdminApprovalStatus.APPROVED) {
+      throw new ApiException(
+        ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
+      );
+    } else if (
+      !(
+        task.paymentStatus === TaskPaymentStatus.REQUIRES_CAPTURE ||
+        task.paymentStatus === TaskPaymentStatus.SUCCEEDED
+      )
+    ) {
+      throw new ApiException(
+        ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
+      );
     }
-    if (heroUuid === task.bossUserUuid) {
-      throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
-    }
-
     const bossRandomName: string =
       'boss-' + (await this.messageService.getRandomNumberWithFourDigits());
     const heroRandomName: string =
@@ -55,6 +70,19 @@ export class MessageManager {
       bossRandomName,
       heroRandomName,
     );
+
+    const rsp = new CreateMessageGroupRspDto(newMessageGroupKey);
+
+    //check if the group already exists, if so, dont do the rest
+    const existingMatchingAttempt: TaskMatchingAttempt =
+      await this.taskMatchingAttemptRepository.findOneTaskMatchingAttemptByMessageGroupId(
+        newMessageGroupKey,
+      );
+
+    if (existingMatchingAttempt != null) {
+      this.logger.log(`existing message group, skip creating attempt`);
+      return new AppResponse(rsp);
+    }
 
     //create new task matching attempt with status = CREATED_MESSAGE_GROUP
     const matchingAttempt: TaskMatchingAttempt = new TaskMatchingAttempt(
@@ -71,7 +99,7 @@ export class MessageManager {
     await this.taskMatchingAttemptRepository.saveOneTaskMatchingAttempt(
       matchingAttempt,
     );
-    return new AppResponse(new CreateMessageGroupRspDto(newMessageGroupKey));
+    return new AppResponse(rsp);
   }
 
   async createMessage(

@@ -9,6 +9,9 @@ import { PaymentIntentRepository } from '../../database/mysql/repositories/payme
 import { PaymentIntent } from '../../database/mysql/entities/payment.intent.entity';
 import { StripeWebhook } from '../../database/mysql/entities/stripe.webhook.entity';
 import { StripeWebhookRepository } from '../../database/mysql/repositories/stripe.webhook.repository';
+import { PaymentUtil } from '../../utils/payment/payment.util';
+import { Task } from '../../database/mysql/entities/task.entity';
+import { TaskRepository } from '../../database/mysql/repositories/task.repository';
 
 @Injectable()
 export class PaymentService {
@@ -16,6 +19,8 @@ export class PaymentService {
     private readonly userService: UserService,
     private readonly paymentIntentRepository: PaymentIntentRepository,
     private readonly stripeWebhookRepository: StripeWebhookRepository,
+    private readonly paymentUtil: PaymentUtil,
+    private readonly taskRepository: TaskRepository,
   ) {}
 
   private readonly logger = new Logger(PaymentService.name);
@@ -75,5 +80,74 @@ export class PaymentService {
 
   async saveStripeWebhook(entity: StripeWebhook) {
     return await this.stripeWebhookRepository.saveStripeWebhook(entity);
+  }
+
+  async captureFullPaymentOfMatchedTask(taskEntity: Task): Promise<Task> {
+    const paymentIntent: PaymentIntent =
+      await this.findOnePaymentIntentByStripePaymentIntentId(
+        taskEntity.paymentIntentId,
+      );
+    if (paymentIntent == null) {
+      this.logger.error(
+        `paymentIntent not found for paymentIntentId: ${taskEntity.paymentIntentId}`,
+      );
+      throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
+    }
+    const rsp = await this.paymentUtil.capturePaymentIntent(
+      paymentIntent.stripePaymentIntentId,
+      +paymentIntent.stripeAmountCapturable,
+    );
+
+    taskEntity.paymentStatus = rsp.status;
+    taskEntity = await this.taskRepository.saveTask(taskEntity);
+
+    return taskEntity;
+  }
+
+  async capturePartialPaymentOfCancelledTask(taskEntity: Task): Promise<Task> {
+    const paymentIntent: PaymentIntent =
+      await this.findOnePaymentIntentByStripePaymentIntentId(
+        taskEntity.paymentIntentId,
+      );
+    if (paymentIntent == null) {
+      this.logger.error(
+        `paymentIntent not found for paymentIntentId: ${taskEntity.paymentIntentId}`,
+      );
+      throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
+    }
+    await this.paymentUtil.capturePaymentIntent(
+      paymentIntent.stripePaymentIntentId,
+      taskEntity.serviceChargeAmt * 100,
+    );
+    const rsp = await this.paymentUtil.cancelPaymentIntent(
+      paymentIntent.stripePaymentIntentId,
+    );
+
+    taskEntity.paymentStatus = rsp.status;
+    taskEntity = await this.taskRepository.saveTask(taskEntity);
+
+    return taskEntity;
+  }
+
+  async cancelPaymentWithoutCapture(taskEntity: Task): Promise<Task> {
+    const paymentIntent: PaymentIntent =
+      await this.findOnePaymentIntentByStripePaymentIntentId(
+        taskEntity.paymentIntentId,
+      );
+    if (paymentIntent == null) {
+      this.logger.error(
+        `paymentIntent not found for paymentIntentId: ${taskEntity.paymentIntentId}`,
+      );
+      throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
+    }
+
+    const rsp = await this.paymentUtil.cancelPaymentIntent(
+      paymentIntent.stripePaymentIntentId,
+    );
+
+    taskEntity.paymentStatus = rsp.status;
+    taskEntity = await this.taskRepository.saveTask(taskEntity);
+
+    return taskEntity;
   }
 }

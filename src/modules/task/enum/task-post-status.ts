@@ -9,6 +9,6 @@ export enum TaskPostStatus {
   MATCHED = 'matched',
 
   //not allow task match (match-matching status)
-  BOSS_CANCELLED = 'boss_cancelled',
+  BOSS_CANCEL_MATCHING = 'boss-cancel-matching',
   EXPIRED = 'expired',
 }

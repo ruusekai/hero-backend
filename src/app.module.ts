@@ -28,6 +28,7 @@ import { MessageWebTestModule } from './modules/message-web-test/message-web-tes
 import { AdminModule } from './modules/admin/admin.module';
 import { PushModule } from './modules/push/push.module';
 import { TaskMatchingAttemptModule } from './task-matching-attempt/task-matching-attempt.module';
+import { WalletModule } from './modules/wallet/wallet.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { TaskMatchingAttemptModule } from './task-matching-attempt/task-matching
     AdminModule,
     PushModule,
     TaskMatchingAttemptModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [

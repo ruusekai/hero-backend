@@ -8,19 +8,17 @@ import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { TaskPaymentStatus } from './enum/task.payment.status';
 import { TaskMatchingAttemptStatus } from './enum/matching-attempt-status';
 import { MessageService } from '../message/message.service';
-import { TaskMatchingAttemptRepository } from '../../database/mysql/repositories/task.matching.attempt.repository';
 import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
-import { MessageUserRoleType } from '../message/enum/message-user-role-type';
 import { PushService } from '../push/push.service';
-import { PushTemplate } from '../../database/mysql/entities/push.template.entity';
+import { TaskMatchingAttemptService } from '../../task-matching-attempt/task-matching-attempt.service';
 
 @Injectable()
 export class TaskService {
   constructor(
     private readonly taskRepository: TaskRepository,
-    private readonly taskMatchingAttemptRepository: TaskMatchingAttemptRepository,
     private readonly messageService: MessageService,
     private readonly pushService: PushService,
+    private readonly matchingAttemptService: TaskMatchingAttemptService,
   ) {}
   async create(
     bossUserUuid: string,
@@ -92,36 +90,5 @@ export class TaskService {
     return await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(
       taskUuid,
     );
-  }
-
-  async findTaskMatchingAttemptListByTaskUuid(taskUuid: string) {
-    return await this.taskMatchingAttemptRepository.findTaskMatchingAttemptByTaskUuid(
-      taskUuid,
-    );
-  }
-
-  async saveTaskMatchingAttemptByList(entityList: TaskMatchingAttempt[]) {
-    return await this.taskMatchingAttemptRepository.saveTaskMatchingAttemptByList(
-      entityList,
-    );
-  }
-
-  async disableMatchingAttemptAndCloseMessageGroupByList(
-    entityList: TaskMatchingAttempt[],
-    status: TaskMatchingAttemptStatus,
-  ) {
-    entityList = await Promise.all(
-      entityList.map(async (matchingAttemptEntity) => {
-        await this.messageService.disableMessageGroupById(
-          matchingAttemptEntity.messageGroupId,
-        );
-        matchingAttemptEntity.isMatched = false;
-        matchingAttemptEntity.isMessageGroupActive = false;
-        matchingAttemptEntity.status = status;
-        return matchingAttemptEntity;
-      }),
-    );
-    await this.saveTaskMatchingAttemptByList(entityList);
-    return true;
   }
 }

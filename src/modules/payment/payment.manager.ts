@@ -4,7 +4,6 @@ import { CreateTaskPaymentReqDto } from './dto/create.task.payment.req.dto';
 import { AppResponse } from '../../common/response/app.response';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
-import { TaskService } from '../task/task.service';
 import { Task } from '../../database/mysql/entities/task.entity';
 import { TaskPaymentStatus } from '../task/enum/task.payment.status';
 import { UserService } from '../user/user.service';
@@ -20,7 +19,6 @@ export class PaymentManager {
   constructor(
     private readonly paymentService: PaymentService,
     private readonly userService: UserService,
-    private readonly taskService: TaskService,
     private readonly paymentUtil: PaymentUtil,
     private readonly taskRepository: TaskRepository,
   ) {}
@@ -32,7 +30,8 @@ export class PaymentManager {
     taskUuid: string,
     createPaymentDto: CreateTaskPaymentReqDto,
   ): Promise<AppResponse> {
-    const taskEntity: Task = await this.taskService.findOneTaskByUuid(taskUuid);
+    const taskEntity: Task =
+      await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(taskUuid);
     let couponDiscountAmt = 0;
     let effectiveCouponDiscountAmt: number = null;
     let calcFinalChargeAmt: number = null;
@@ -125,6 +124,11 @@ export class PaymentManager {
       paymentIntentEntity,
     );
 
+    //save task
+    taskEntity.paymentIntentId = paymentIntent.id;
+    taskEntity.paymentStatus = paymentIntent.status;
+    await this.taskRepository.saveTask(taskEntity);
+
     return new AppResponse(paymentIntentEntity);
   }
 
@@ -189,6 +193,7 @@ export class PaymentManager {
           await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(
             entity.taskUuid,
           );
+        taskEntity.paymentIntentId = entity.stripePaymentIntentId;
         taskEntity.paymentStatus = TaskPaymentStatus.REQUIRES_CAPTURE;
         await this.taskRepository.saveTask(taskEntity);
         this.logger.log(`task entity ${taskEntity.uuid} updated`);

@@ -1,34 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { TaskMatchingAttemptService } from './task-matching-attempt.service';
-import { CreateTaskMatchingAttemptDto } from './dto/create-task-matching-attempt.dto';
-import { UpdateTaskMatchingAttemptDto } from './dto/update-task-matching-attempt.dto';
+import { Controller, Get, Param, Patch, Request } from '@nestjs/common';
+import { TaskMatchingAttemptManager } from './task-matching-attempt.manager';
+import { MatchingAttemptAction } from '../common/enum/matching.attempt.action';
 
 @Controller('task-matching-attempt')
 export class TaskMatchingAttemptController {
-  constructor(private readonly taskMatchingAttemptService: TaskMatchingAttemptService) {}
+  constructor(
+    private readonly matchingAttemptManager: TaskMatchingAttemptManager,
+  ) {}
 
-  @Post()
-  create(@Body() createTaskMatchingAttemptDto: CreateTaskMatchingAttemptDto) {
-    return this.taskMatchingAttemptService.create(createTaskMatchingAttemptDto);
+  @Patch(':messageGroupId/:action')
+  update(
+    @Request() req,
+    @Param('messageGroupId') messageGroupId: string,
+    @Param('action') action: MatchingAttemptAction,
+  ) {
+    return this.matchingAttemptManager.update(
+      messageGroupId,
+      action,
+      req.user.uuid,
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.taskMatchingAttemptService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.taskMatchingAttemptService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskMatchingAttemptDto: UpdateTaskMatchingAttemptDto) {
-    return this.taskMatchingAttemptService.update(+id, updateTaskMatchingAttemptDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.taskMatchingAttemptService.remove(+id);
+  @Get(':messageGroupId')
+  findOne(@Request() req, @Param('messageGroupId') messageGroupId: string) {
+    return this.matchingAttemptManager.findOne(messageGroupId, req.user.uuid);
   }
 }

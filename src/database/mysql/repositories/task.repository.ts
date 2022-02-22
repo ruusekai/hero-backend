@@ -74,8 +74,8 @@ export class TaskRepository extends Repository<Task> {
           TaskPaymentStatus.SUCCEEDED,
         ],
       });
-      queryBuilder.andWhere('task.matching_status = :matchingStatus', {
-        matchingStatus: TaskPostStatus.AVAILABLE,
+      queryBuilder.andWhere('task.post_status = :postStatus', {
+        postStatus: TaskPostStatus.AVAILABLE,
       });
 
       //ordering

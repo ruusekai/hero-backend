@@ -21,6 +21,9 @@ import { PushAudienceRepository } from './push.audience.repository';
 import { PushNotificationRepository } from './push.notification.repository';
 import { TaskMatchingAttemptRepository } from './task.matching.attempt.repository';
 import { PushTemplateRepository } from './push.template.repository';
+import { TaskHistoryRepository } from './task.history.repository';
+import { HeroWalletHistoryRepository } from './hero.wallet.history.repository';
+import { HeroWalletDepositRepository } from './hero.wallet.deposit.repository';
 
 @Module({
   imports: [
@@ -46,6 +49,9 @@ import { PushTemplateRepository } from './push.template.repository';
       PushNotificationRepository,
       PushTemplateRepository,
       TaskMatchingAttemptRepository,
+      TaskHistoryRepository,
+      HeroWalletHistoryRepository,
+      HeroWalletDepositRepository,
     ]),
   ],
   providers: [],

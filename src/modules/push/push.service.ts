@@ -61,6 +61,13 @@ export class PushService {
       await this.pushAudienceRepository.findPushAudienceListByUserUuid(
         userUuid,
       );
+    if (pushAudienceList == null || pushAudienceList.length == 0) {
+      this.logger.log(
+        `[pushService][createNotification] empty push audience, skip push`,
+      );
+      return false;
+    }
+
     const playerIdList = pushAudienceList.map((entity) => {
       return entity.playerId;
     });

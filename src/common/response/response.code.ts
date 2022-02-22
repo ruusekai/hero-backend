@@ -173,7 +173,14 @@ export class ResponseCode {
     new ResponseStatus(
       7011,
       'MATCHED_TASK_CANNOT_BE_CANCELLED_BY_BOSS',
-      'task not exists',
+      'MATCHED_TASK_CANNOT_BE_CANCELLED_BY_BOSS',
+    );
+
+  public static readonly STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION =
+    new ResponseStatus(
+      7012,
+      'INVALID_TASK_MATCHING_ATTEMPT_ACTION',
+      'INVALID_TASK_MATCHING_ATTEMPT_ACTION',
     );
 
   //messaging

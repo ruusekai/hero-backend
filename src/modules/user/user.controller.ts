@@ -1,22 +1,17 @@
 import {
   Body,
   Controller,
-  Request,
-  Post,
   Get,
   Logger,
-  Patch,
   Param,
+  Patch,
+  Post,
+  Request,
 } from '@nestjs/common';
 import { UserManager } from './user.manager';
 import { UserCreateKycApplicationReqDto } from './dto/request/user.create.kyc.application.req.dto';
-import { RequiredHeader } from '../../common/decorator/required.header.decorator';
 import { UserPatchUserReqDto } from './dto/request/user.patch.user.req.dto';
-import { ApiException } from '../../common/exception/api.exception';
-import { ResponseCode } from '../../common/response/response.code';
-import { AppResponse } from '../../common/response/app.response';
 import { UserCouponStatus } from './enum/user.coupon.status';
-import { IsEnum } from 'class-validator';
 
 @Controller('/user')
 export class UserController {
@@ -78,5 +73,10 @@ export class UserController {
       req.user.uuid,
       status,
     );
+  }
+
+  @Get('/hero/wallet')
+  findUserHeroWalletBalance(@Request() req) {
+    return this.userManager.findUserHeroWalletBalance(req.user.uuid);
   }
 }

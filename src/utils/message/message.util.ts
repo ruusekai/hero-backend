@@ -122,7 +122,7 @@ export class MessageUtil {
     const groupObject = await this.db
       .ref(`/groups/${messageGroupId}`)
       .once('value');
-    this.logger.log('groupObject: ' + groupObject.val());
+    this.logger.log('groupObject: ' + JSON.stringify(groupObject.val()));
     return groupObject.val();
   }
 

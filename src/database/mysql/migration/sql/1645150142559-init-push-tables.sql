@@ -54,3 +54,13 @@ create table if not exists push_template
     created_by int default 0 not null,
     updated_by int default 0 not null
 );
+
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (1, 'hero-send-matching', '任務狀態更新', 'Hero要求接受任務', 'message', 0, 1, '2022-02-21 20:49:16', '2022-02-21 20:49:16', 0, 0);
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (2, 'boss-reject-matching', '任務狀態更新', '你已被Boss拒絕', 'message', 0, 1, '2022-02-21 20:52:01', '2022-02-21 20:52:01', 0, 0);
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (3, 'boss-accept-matching', '任務狀態更新', '你已成功接受任務', 'message', 0, 1, '2022-02-21 20:58:42', '2022-02-21 20:58:42', 0, 0);
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (4, 'hero-abandon-matching', '任務狀態更新', 'Hero已放棄任務', 'message', 0, 1, '2022-02-21 20:58:42', '2022-02-21 20:58:42', 0, 0);
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (5, 'hero-done-task', '任務狀態更新', 'Hero已完成任務，請確認', 'message', 0, 1, '2022-02-21 20:58:42', '2022-02-21 20:58:42', 0, 0);
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (6, 'boss-confirm-done', '任務狀態更新', 'Boss確認已完成任務，恭喜你！', 'message', 0, 1, '2022-02-21 20:58:42', '2022-02-21 20:58:42', 0, 0);
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (7, 'boss-reject-done', '任務狀態更新', 'Boss認為任務尚未完成，請在任務完成後重新申請', 'message', 0, 1, '2022-02-21 20:58:42', '2022-02-21 20:58:42', 0, 0);
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (8, 'new-message-from-boss', '你收到boss的新訊息', null, 'message', 0, 1, '2022-02-23 19:40:03', '2022-02-23 19:40:03', 0, 0);
+INSERT INTO hero.push_template (id, name, heading, content, landing, is_deleted, version, created_date, updated_date, created_by, updated_by) VALUES (9, 'new-message-from-hero', '你收到hero的新訊息', null, 'message', 0, 1, '2022-02-23 19:40:03', '2022-02-23 19:40:03', 0, 0);

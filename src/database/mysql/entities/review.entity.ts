@@ -4,6 +4,28 @@ import { MessageUserRoleType } from '../../../modules/message/enum/message-user-
 
 @Entity()
 export class Review extends BaseEntity {
+  constructor(
+    messageGroupId: string,
+    fromUserUuid: string,
+    fromUserRole: MessageUserRoleType,
+    fromUserName: string,
+    targetUserUuid: string,
+    targetUserRole: MessageUserRoleType,
+    targetUserName: string,
+    score: number,
+    description: string,
+  ) {
+    super();
+    this.messageGroupId = messageGroupId;
+    this.fromUserUuid = fromUserUuid;
+    this.fromUserRole = fromUserRole;
+    this.fromUserName = fromUserName;
+    this.targetUserUuid = targetUserUuid;
+    this.targetUserRole = targetUserRole;
+    this.targetUserName = targetUserName;
+    this.score = score;
+    this.description = description;
+  }
   @Column({ name: 'uuid', unique: true })
   @Generated('uuid')
   uuid: string;
@@ -27,7 +49,7 @@ export class Review extends BaseEntity {
   targetUserRole: MessageUserRoleType;
 
   @Column({ name: 'target_user_name' })
-  tagetUserName: string;
+  targetUserName: string;
 
   @Column({ name: 'score' })
   score: number;

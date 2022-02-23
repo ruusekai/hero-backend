@@ -183,6 +183,12 @@ export class ResponseCode {
       'INVALID_TASK_MATCHING_ATTEMPT_ACTION',
     );
 
+  public static readonly STATUS_7100_ALREADY_REVIEWED = new ResponseStatus(
+    7100,
+    'ALREADY_REVIEWED',
+    'ALREADY_REVIEWED',
+  );
+
   //messaging
   public static readonly STATUS_8000_FIREBASE_ERROR = new ResponseStatus(
     8000,

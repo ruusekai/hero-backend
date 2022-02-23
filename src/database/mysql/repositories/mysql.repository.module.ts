@@ -24,6 +24,7 @@ import { PushTemplateRepository } from './push.template.repository';
 import { TaskHistoryRepository } from './task.history.repository';
 import { HeroWalletHistoryRepository } from './hero.wallet.history.repository';
 import { HeroWalletDepositRepository } from './hero.wallet.deposit.repository';
+import { ReviewRepository } from './review.repository';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { HeroWalletDepositRepository } from './hero.wallet.deposit.repository';
       TaskHistoryRepository,
       HeroWalletHistoryRepository,
       HeroWalletDepositRepository,
+      ReviewRepository,
     ]),
   ],
   providers: [],

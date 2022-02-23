@@ -56,10 +56,10 @@ export class TaskMatchingAttempt extends BaseEntity {
   isMessageGroupActive: boolean;
 
   @Column({ name: 'is_hero_reviewed' })
-  isHeroReviewed: string;
+  isHeroReviewed: boolean;
 
   @Column({ name: 'is_boss_reviewed' })
-  isBossReviewed: string;
+  isBossReviewed: boolean;
 
   @ManyToOne(() => Task)
   @JoinColumn({ name: 'task_uuid', referencedColumnName: 'uuid' })

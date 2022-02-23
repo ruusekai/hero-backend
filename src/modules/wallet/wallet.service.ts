@@ -15,7 +15,7 @@ export class WalletService {
 
   async sumHeroWalletBalance(userUuid: string): Promise<number> {
     const result = await this.walletHistoryRepo.sumAmountByUserUuid(userUuid);
-    return result.average_amount;
+    return result.sum_amount;
   }
 
   async addHeroRewardAmtToHeroWalletByMatchingAttempt(

@@ -5,17 +5,19 @@ import { GetHeroWalletBalanceRspDto } from './dto/response/get.hero.wallet.balan
 import { AppResponse } from '../../common/response/app.response';
 import { HeroWalletHistoryDto } from './dto/entity/hero.wallet.history.dto';
 import { ListHeroWalletHistoryRspDto } from './dto/response/list.hero.wallet.history.rsp.dto';
+import { WalletService } from './wallet.service';
 
 @Injectable()
 export class WalletManager {
   constructor(
     private readonly walletHistoryRepo: HeroWalletHistoryRepository,
     private readonly depositRepo: HeroWalletDepositRepository,
+    private readonly walletService: WalletService,
   ) {}
 
   async getHeroWalletBalance(userUuid: string): Promise<AppResponse> {
-    const result = await this.walletHistoryRepo.sumAmountByUserUuid(userUuid);
-    const rsp = new GetHeroWalletBalanceRspDto(result.average_amount);
+    const result = await this.walletService.sumHeroWalletBalance(userUuid);
+    const rsp = new GetHeroWalletBalanceRspDto(result);
     return new AppResponse(rsp);
   }
 

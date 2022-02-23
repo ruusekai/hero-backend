@@ -29,6 +29,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { PushModule } from './modules/push/push.module';
 import { TaskMatchingAttemptModule } from './task-matching-attempt/task-matching-attempt.module';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { ReviewModule } from './modules/review/review.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
     PushModule,
     TaskMatchingAttemptModule,
     WalletModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [

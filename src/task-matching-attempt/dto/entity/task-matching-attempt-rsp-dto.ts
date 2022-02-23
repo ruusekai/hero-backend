@@ -24,6 +24,6 @@ export class TaskMatchingAttemptRspDto {
   isMatched: boolean;
   status: TaskMatchingAttemptStatus;
   isMessageGroupActive: boolean;
-  isHeroReviewed: string;
-  isBossReviewed: string;
+  isHeroReviewed: boolean;
+  isBossReviewed: boolean;
 }

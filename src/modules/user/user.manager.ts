@@ -158,6 +158,4 @@ export class UserManager {
     const rsp = new FindAllUserCouponRspDto(userCouponDtoList);
     return new AppResponse(rsp);
   }
-
-  async findUserHeroWalletBalance(userUuid: string) {}
 }

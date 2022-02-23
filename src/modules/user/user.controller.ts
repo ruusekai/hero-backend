@@ -74,9 +74,4 @@ export class UserController {
       status,
     );
   }
-
-  @Get('/hero/wallet')
-  findUserHeroWalletBalance(@Request() req) {
-    return this.userManager.findUserHeroWalletBalance(req.user.uuid);
-  }
 }

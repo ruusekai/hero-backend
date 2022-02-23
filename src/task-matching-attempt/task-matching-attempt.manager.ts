@@ -15,6 +15,7 @@ import { PaymentService } from '../modules/payment/payment.service';
 import { Task } from '../database/mysql/entities/task.entity';
 import { TaskHistory } from '../database/mysql/entities/task.history.entity';
 import { WalletService } from '../modules/wallet/wallet.service';
+import { TaskRepository } from '../database/mysql/repositories/task.repository';
 
 @Injectable()
 export class TaskMatchingAttemptManager {
@@ -25,6 +26,7 @@ export class TaskMatchingAttemptManager {
     private readonly pushService: PushService,
     private readonly paymentService: PaymentService,
     private readonly walletService: WalletService,
+    private readonly taskRepo: TaskRepository,
   ) {}
 
   async findOne(
@@ -64,6 +66,8 @@ export class TaskMatchingAttemptManager {
         return await this.heroDoneTask(matchingAttempt, userUuid);
       case MatchingAttemptAction.BOSS_ACCEPT_DONE:
         return await this.bossAcceptDone(matchingAttempt, userUuid);
+      case MatchingAttemptAction.BOSS_REJECT_DONE:
+        return await this.bossRejectDone(matchingAttempt, userUuid);
       default:
         throw new ApiException(
           ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
@@ -98,6 +102,9 @@ export class TaskMatchingAttemptManager {
         ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
       );
     }
+    this.logger.log(
+      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+    );
 
     //2. save the attempt
     matchingAttempt.status = newMatchingStatus;
@@ -151,6 +158,9 @@ export class TaskMatchingAttemptManager {
         ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
       );
     }
+    this.logger.log(
+      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+    );
 
     //2. save the attempt and close chatroom
     await this.matchingAttemptService.disableMatchingAttemptAndCloseMessageGroupAndCreateHistory(
@@ -204,20 +214,34 @@ export class TaskMatchingAttemptManager {
         ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
       );
     }
+    this.logger.log(
+      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+    );
 
-    //2.save the attempt and task
+    //2. capture payment
+    let taskEntity: Task =
+      await this.taskRepo.findOneTaskByUuidAndIsDeletedFalse(
+        matchingAttempt.taskUuid,
+      );
+    if (taskEntity == null) {
+      throw new ApiException(ResponseCode.STATUS_7010_TASK_NOT_EXIST);
+    }
+    await this.paymentService.captureFullPaymentOfMatchedTask(taskEntity);
+
+    //3.save the attempt and task
     matchingAttempt.status = newMatchingStatus;
     matchingAttempt.isMatched = true;
     matchingAttempt = await this.matchingAttemptService.saveTaskMatchingAttempt(
       matchingAttempt,
     );
     //save the task
-    const taskEntity: Task =
+    taskEntity =
       await this.matchingAttemptService.updateMatchedTaskAndStopPosting(
+        taskEntity,
         matchingAttempt,
       );
 
-    //3. close all other chatrooms
+    //4. close all other chatrooms
     const otherMatchingAttemptList: TaskMatchingAttempt[] =
       await this.matchingAttemptService.findTaskMatchingAttemptByTaskUuidAndNotMessageGroupId(
         matchingAttempt.taskUuid,
@@ -229,8 +253,8 @@ export class TaskMatchingAttemptManager {
       MessageUserRoleType.BOSS,
     );
 
-    //TODO:4a send noti when boss match others??
-    //4b. send notification to hero for a successful match
+    //TODO:5a send noti when boss match others??
+    //5b. send notification to hero for a successful match
     //without await
     this.pushService.createNotificationByTemplate(
       matchingAttempt.heroUserUuid,
@@ -238,7 +262,7 @@ export class TaskMatchingAttemptManager {
       matchingAttempt.messageGroupId,
     );
 
-    //5. save attempt history
+    //6. save attempt history
     const historyEntity: TaskHistory = new TaskHistory(
       matchingAttempt.taskUuid,
       matchingAttempt.messageGroupId,
@@ -249,9 +273,6 @@ export class TaskMatchingAttemptManager {
       newMatchingStatus,
     );
     await this.matchingAttemptService.saveTaskHistory(historyEntity);
-
-    //6. capture payment
-    await this.paymentService.captureFullPaymentOfMatchedTask(taskEntity);
 
     const rsp = new TaskMatchingAttemptRspDto(matchingAttempt);
     return new AppResponse(rsp);
@@ -279,6 +300,9 @@ export class TaskMatchingAttemptManager {
         ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
       );
     }
+    this.logger.log(
+      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+    );
 
     //2. save the attempt and task
     matchingAttempt.status = newMatchingStatus;
@@ -340,6 +364,9 @@ export class TaskMatchingAttemptManager {
         ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
       );
     }
+    this.logger.log(
+      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+    );
 
     //2. save the attempt and task
     matchingAttempt.status = newMatchingStatus;
@@ -390,6 +417,9 @@ export class TaskMatchingAttemptManager {
         ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
       );
     }
+    this.logger.log(
+      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+    );
 
     //2.save the attempt and task
     matchingAttempt.status = newMatchingStatus;
@@ -417,6 +447,58 @@ export class TaskMatchingAttemptManager {
     );
 
     //6. save attempt history
+    const historyEntity: TaskHistory = new TaskHistory(
+      matchingAttempt.taskUuid,
+      matchingAttempt.messageGroupId,
+      matchingAttempt.bossUserUuid,
+      MessageUserRoleType.BOSS,
+      MatchingHistoryActionType.STATUS_CHANGE,
+      currentMatchingStatus,
+      newMatchingStatus,
+    );
+    await this.matchingAttemptService.saveTaskHistory(historyEntity);
+
+    const rsp = new TaskMatchingAttemptRspDto(matchingAttempt);
+    return new AppResponse(rsp);
+  }
+
+  async bossRejectDone(matchingAttempt: TaskMatchingAttempt, userUuid: string) {
+    const currentMatchingStatus: TaskMatchingAttemptStatus =
+      matchingAttempt.status;
+    const newMatchingStatus: TaskMatchingAttemptStatus =
+      TaskMatchingAttemptStatus.BOSS_ACCEPT_MATCHING;
+
+    //1.checking
+    //only boss can do
+    if (userUuid !== matchingAttempt.bossUserUuid) {
+      throw new ApiException(ResponseCode.STATUS_4013_FORBIDDEN);
+    } else if (
+      //only matched task can do
+      matchingAttempt.status !== TaskMatchingAttemptStatus.HERO_DONE_TASK
+    ) {
+      this.logger.error(`invalid attempt status: ${matchingAttempt.status}`);
+      throw new ApiException(
+        ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
+      );
+    }
+    this.logger.log(
+      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+    );
+
+    //2.save the attempt and task
+    matchingAttempt.status = newMatchingStatus;
+    matchingAttempt = await this.matchingAttemptService.saveTaskMatchingAttempt(
+      matchingAttempt,
+    );
+
+    //3. send notification to hero (no await)
+    this.pushService.createNotificationByTemplate(
+      matchingAttempt.heroUserUuid,
+      PushTemplateName.BOSS_REJECT_DONE,
+      matchingAttempt.messageGroupId,
+    );
+
+    //4. save attempt history
     const historyEntity: TaskHistory = new TaskHistory(
       matchingAttempt.taskUuid,
       matchingAttempt.messageGroupId,

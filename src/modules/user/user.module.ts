@@ -7,7 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { WalletModule } from '../wallet/wallet.module';
 
 @Module({
-  imports: [MySqlRepositoryModule, AuthModule, WalletModule],
+  imports: [MySqlRepositoryModule, AuthModule],
   controllers: [UserController],
   providers: [UserManager, UserService],
   exports: [UserService],

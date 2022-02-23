@@ -1,12 +1,17 @@
 import { Controller, Get, Request } from '@nestjs/common';
-import { WalletService } from './wallet.service';
+import { WalletManager } from './wallet.manager';
 
 @Controller('wallet')
 export class WalletController {
-  constructor(private readonly walletService: WalletService) {}
+  constructor(private readonly walletManager: WalletManager) {}
 
-  @Get()
-  testing(@Request() req) {
-    return this.walletService.sumHeroWalletBalance(req.user.uuid);
+  @Get('hero/balance')
+  getHeroWalletBalance(@Request() req) {
+    return this.walletManager.getHeroWalletBalance(req.user.uuid);
+  }
+
+  @Get('hero/history')
+  listHeroWalletHistory(@Request() req) {
+    return this.walletManager.listHeroWalletHistory(req.user.uuid);
   }
 }

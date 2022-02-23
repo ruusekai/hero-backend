@@ -142,15 +142,9 @@ export class TaskMatchingAttemptService {
   }
 
   async updateMatchedTaskAndStopPosting(
+    task: Task,
     matchingAttempt: TaskMatchingAttempt,
   ): Promise<Task> {
-    let task: Task =
-      await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(
-        matchingAttempt.taskUuid,
-      );
-    if (task == null) {
-      throw new ApiException(ResponseCode.STATUS_7010_TASK_NOT_EXIST);
-    }
     task.postStatus = TaskPostStatus.MATCHED;
     task.heroUserUuid = matchingAttempt.heroUserUuid;
     task.messageGroupId = matchingAttempt.messageGroupId;

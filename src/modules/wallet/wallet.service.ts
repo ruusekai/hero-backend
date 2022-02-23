@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
 import { HeroWalletHistoryRepository } from '../../database/mysql/repositories/hero.wallet.history.repository';
 import { HeroWalletDepositRepository } from '../../database/mysql/repositories/hero.wallet.deposit.repository';
@@ -15,9 +14,7 @@ export class WalletService {
   ) {}
 
   async sumHeroWalletBalance(userUuid: string): Promise<number> {
-    const result = await this.walletHistoryRepo.averageAmountByUserUuid(
-      userUuid,
-    );
+    const result = await this.walletHistoryRepo.sumAmountByUserUuid(userUuid);
     return result.average_amount;
   }
 
@@ -39,21 +36,5 @@ export class WalletService {
       deposit.heroRewardAmt,
     );
     return await this.walletHistoryRepo.saveHeroWalletHistory(history);
-  }
-
-  findAll() {
-    return `This action returns all wallet`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} wallet`;
-  }
-
-  update(id: number, updateWalletDto: UpdateWalletDto) {
-    return `This action updates a #${id} wallet`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} wallet`;
   }
 }

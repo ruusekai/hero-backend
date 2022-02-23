@@ -5,8 +5,8 @@ import { ApiException } from '../../../common/exception/api.exception';
 import { Task } from '../entities/task.entity';
 import { AdminApprovalStatus } from '../../../common/enum/admin.approval.status';
 import { IPaginationOptions, paginateRaw } from 'nestjs-typeorm-paginate';
-import { TaskOrderByColumn } from '../../../modules/task/dto/enum/task.order.by.column';
-import { OrderDirection } from '../../../modules/task/dto/enum/order.direction';
+import { TaskOrderByColumn } from '../../../modules/task/enum/task.order.by.column';
+import { OrderDirection } from '../../../modules/task/enum/order.direction';
 import { TaskPaymentStatus } from '../../../modules/task/enum/task.payment.status';
 import { TaskPostStatus } from '../../../modules/task/enum/task-post-status';
 
@@ -139,6 +139,28 @@ export class TaskRepository extends Repository<Task> {
     try {
       Task.updatedDate = new Date(Date.now());
       return await this.save(Task);
+    } catch (e) {
+      console.log(JSON.stringify(e.stack));
+      throw new ApiException(ResponseCode.STATUS_5001_DATABASE_ERROR, e);
+    }
+  }
+
+  async findTaskByHeroUserUuid(userUuid: string): Promise<Task[]> {
+    try {
+      return await this.find({
+        where: { heroUserUuid: userUuid, isDeleted: false },
+      });
+    } catch (e) {
+      console.log(JSON.stringify(e.stack));
+      throw new ApiException(ResponseCode.STATUS_5001_DATABASE_ERROR, e);
+    }
+  }
+
+  async findTaskByBossUserUuid(userUuid: string): Promise<Task[]> {
+    try {
+      return await this.find({
+        where: { bossUserUuid: userUuid, isDeleted: false },
+      });
     } catch (e) {
       console.log(JSON.stringify(e.stack));
       throw new ApiException(ResponseCode.STATUS_5001_DATABASE_ERROR, e);

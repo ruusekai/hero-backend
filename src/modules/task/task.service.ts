@@ -6,9 +6,7 @@ import { TaskRepository } from '../../database/mysql/repositories/task.repositor
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { TaskPaymentStatus } from './enum/task.payment.status';
-import { TaskMatchingAttemptStatus } from './enum/matching-attempt-status';
 import { MessageService } from '../message/message.service';
-import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
 import { PushService } from '../push/push.service';
 import { TaskMatchingAttemptService } from '../../task-matching-attempt/task-matching-attempt.service';
 
@@ -86,9 +84,17 @@ export class TaskService {
     );
   }
 
-  async findOneTaskByUuid(taskUuid: string) {
+  async findOneTaskByUuid(taskUuid: string): Promise<Task> {
     return await this.taskRepository.findOneTaskByUuidAndIsDeletedFalse(
       taskUuid,
     );
+  }
+
+  async findTaskByHeroUserUuid(heroUserUuid: string): Promise<Task[]> {
+    return await this.taskRepository.findTaskByHeroUserUuid(heroUserUuid);
+  }
+
+  async findTaskByBossUserUuid(bossUserUuid: string): Promise<Task[]> {
+    return await this.taskRepository.findTaskByBossUserUuid(bossUserUuid);
   }
 }

@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional } from 'class-validator';
 import { PaginateReqDto } from '../../../../common/dto/request/paginate.req.dto';
-import { TaskOrderByColumn } from '../enum/task.order.by.column';
-import { OrderDirection } from '../enum/order.direction';
+import { TaskOrderByColumn } from '../../enum/task.order.by.column';
+import { OrderDirection } from '../../enum/order.direction';
 
 export class FindTaskReqDto extends PaginateReqDto {
   @IsOptional()

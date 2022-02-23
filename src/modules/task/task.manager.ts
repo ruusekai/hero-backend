@@ -8,10 +8,10 @@ import { FindTaskReqDto } from './dto/request/find.task.req.dto';
 import { TaskDto } from './dto/entity/task.dto';
 import { FindTaskRspDto } from './dto/response/find.task.rsp.dto';
 import { PaginateRspDto } from '../../common/dto/response/paginate.rsp.dto';
-import { OrderDirection } from './dto/enum/order.direction';
+import { OrderDirection } from './enum/order.direction';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
-import { TaskOrderByColumn } from './dto/enum/task.order.by.column';
+import { TaskOrderByColumn } from './enum/task.order.by.column';
 import { Task } from '../../database/mysql/entities/task.entity';
 import { TaskPostStatus } from './enum/task-post-status';
 import { TaskMatchingAttemptStatus } from './enum/matching-attempt-status';
@@ -22,6 +22,8 @@ import { PaymentService } from '../payment/payment.service';
 import { TaskHistory } from '../../database/mysql/entities/task.history.entity';
 import { MatchingHistoryActionType } from './enum/matching-history-action-type';
 import { TaskPaymentStatus } from './enum/task.payment.status';
+import { TaskMatchingAttemptRspDto } from '../../task-matching-attempt/dto/entity/task-matching-attempt-rsp-dto';
+import { TaskWithMatchingAttemptDto } from './dto/entity/task.with.matching.attempt.dto';
 
 @Injectable()
 export class TaskManager {
@@ -238,5 +240,58 @@ export class TaskManager {
     await this.matchingAttemptService.saveTaskHistory(historyEntity);
 
     return new AppResponse(taskEntity);
+  }
+
+  async listUserHeroTask(userUuid: string) {
+    const taskEntityList: Task[] =
+      await this.taskService.findTaskByHeroUserUuid(userUuid);
+    const rsp: TaskWithMatchingAttemptDto[] = await Promise.all(
+      taskEntityList.map(async (entity) => {
+        const matchingAttempt: TaskMatchingAttempt =
+          await this.matchingAttemptService.findOneTaskMatchingAttemptByMessageGroupId(
+            entity.messageGroupId,
+          );
+        //hero always get 1 and only 1 attempt
+        const matchedAttemptDto = new TaskMatchingAttemptRspDto(
+          matchingAttempt,
+        );
+        return new TaskWithMatchingAttemptDto(entity, matchedAttemptDto, [
+          matchedAttemptDto,
+        ]);
+      }),
+    );
+    return new AppResponse(rsp);
+  }
+
+  async listUserBossTask(userUuid: string) {
+    const taskEntityList: Task[] =
+      await this.taskService.findTaskByBossUserUuid(userUuid);
+    const rsp: TaskWithMatchingAttemptDto[] = await Promise.all(
+      taskEntityList.map(async (entity) => {
+        //get matching entity list
+        const matchingAttemptList: TaskMatchingAttempt[] =
+          await this.matchingAttemptService.findTaskMatchingAttemptListByTaskUuid(
+            entity.uuid,
+          );
+        //get matching dto list
+        const matchingAttemptDtoList: TaskMatchingAttemptRspDto[] =
+          matchingAttemptList.map((subEntity) => {
+            return new TaskMatchingAttemptRspDto(subEntity);
+          });
+        //get name of the matched one
+        let matchedAttemptDto: TaskMatchingAttemptRspDto = null;
+        if (entity.messageGroupId != null) {
+          matchedAttemptDto = matchingAttemptDtoList.filter(
+            (dto) => dto.messageGroupId === entity.messageGroupId,
+          )[0];
+        }
+        return new TaskWithMatchingAttemptDto(
+          entity,
+          matchedAttemptDto,
+          matchingAttemptDtoList,
+        );
+      }),
+    );
+    return new AppResponse(rsp);
   }
 }

@@ -31,6 +31,7 @@ export class PushService {
     userUuid: string,
     templateName: PushTemplateName,
     landingRefId: string,
+    customContent: string = null,
   ) {
     const template: PushTemplate = await this.findOnePushTemplateByName(
       templateName,
@@ -43,7 +44,7 @@ export class PushService {
     await this.createNotification(
       userUuid,
       template.heading,
-      template.content,
+      customContent == null ? template.content : customContent,
       template.landing,
       landingRefId,
     );

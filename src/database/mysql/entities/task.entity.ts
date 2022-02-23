@@ -1,4 +1,11 @@
-import { Column, Entity, Generated, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Generated,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { User } from './user.entity';
 import { AdminApprovalStatus } from '../../../common/enum/admin.approval.status';
@@ -6,6 +13,7 @@ import { AdminDeclineReason } from '../../../common/enum/admin.decline.reason';
 import { TaskCategory } from '../../../modules/task/enum/task.category';
 import { TaskPaymentStatus } from '../../../modules/task/enum/task.payment.status';
 import { TaskPostStatus } from '../../../modules/task/enum/task-post-status';
+import { TaskMatchingAttempt } from './task.matching.attempt.entity';
 
 @Entity()
 export class Task extends BaseEntity {

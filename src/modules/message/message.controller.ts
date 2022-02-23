@@ -1,25 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Request,
-} from '@nestjs/common';
-import { MessageService } from './message.service';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
+import { Body, Controller, Param, Post, Request } from '@nestjs/common';
 import { MessageManager } from './message.manager';
 import { CreateMessageGroupReqDto } from './dto/request/create-message-group-req-dto';
 import { CreateMessageReqDto } from './dto/request/create-message-req-dto';
 
 @Controller('message')
 export class MessageController {
-  constructor(
-    private readonly messageManager: MessageManager,
-    private readonly messageService: MessageService,
-  ) {}
+  constructor(private readonly messageManager: MessageManager) {}
 
   @Post('/custom-token')
   createCustomToken(@Request() req) {

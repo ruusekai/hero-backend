@@ -30,4 +30,14 @@ export class TaskController {
   cancelTaskByBoss(@Request() req, @Param('taskUuid') taskUuid: string) {
     return this.taskManager.cancelTaskByBoss(req.user.uuid, taskUuid);
   }
+
+  @Get('/hero')
+  listUserHeroTask(@Request() req) {
+    return this.taskManager.listUserHeroTask(req.user.uuid);
+  }
+
+  @Get('/boss')
+  listUserBossTask(@Request() req) {
+    return this.taskManager.listUserBossTask(req.user.uuid);
+  }
 }

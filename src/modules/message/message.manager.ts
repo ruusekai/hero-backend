@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { Task } from '../../database/mysql/entities/task.entity';
-import { TaskService } from '../task/task.service';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
 import { CreateMessageGroupRspDto } from './dto/response/create-message-group-rsp-dto';
@@ -17,6 +16,8 @@ import { TaskMatchingAttemptRepository } from '../../database/mysql/repositories
 import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
 import { TaskPaymentStatus } from '../task/enum/task.payment.status';
+import { PushTemplateName } from '../../common/enum/push.template.name';
+import { PushService } from '../push/push.service';
 
 @Injectable()
 export class MessageManager {
@@ -26,6 +27,7 @@ export class MessageManager {
     private readonly messageService: MessageService,
     private readonly taskRepository: TaskRepository,
     private readonly taskMatchingAttemptRepository: TaskMatchingAttemptRepository,
+    private readonly pushService: PushService,
   ) {}
   async createCustomToken(userUuid: string): Promise<AppResponse> {
     const customToken: string = await this.messageService.createCustomToken(
@@ -118,20 +120,27 @@ export class MessageManager {
     }
 
     //check the user role in this group
+    let recipientUserUuid: string;
+    let templateName: PushTemplateName;
     let userRole: MessageUserRoleType = null;
     let userName: string;
     if (group.boss.id === userUuid) {
       userRole = group.boss.role;
       userName = group.boss.name;
+      recipientUserUuid = group.hero.id;
+      templateName = PushTemplateName.NEW_MESSAGE_FROM_BOSS;
     } else if (group.hero.id === userUuid) {
       userRole = group.hero.role;
       userName = group.hero.name;
+      recipientUserUuid = group.boss.id;
+      templateName = PushTemplateName.NEW_MESSAGE_FROM_HERO;
     }
     if (userRole == null) {
       throw new ApiException(
         ResponseCode.STATUS_8003_USER_NOT_IN_MESSAGE_GROUP,
       );
     }
+    //send message
     await this.messageService.validateMessageContent(messageType, content);
     const rsp: CreateMessageRspDto = await this.messageService.createMessage(
       messageGroupId,
@@ -141,6 +150,15 @@ export class MessageManager {
       userRole,
       userName,
     );
+
+    //send notification(no await)
+    this.pushService.createNotificationByTemplate(
+      recipientUserUuid,
+      templateName,
+      messageGroupId,
+      messageType === MessageType.IMAGE ? '<圖片>' : content,
+    );
+
     return new AppResponse(rsp);
   }
 }

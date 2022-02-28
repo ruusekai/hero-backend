@@ -128,6 +128,7 @@ export class MessageUtil {
 
   async createMessageGroup(
     taskUuid: string,
+    title: string,
     bossUuid: string,
     heroUuid: string,
     bossName: string,
@@ -142,6 +143,7 @@ export class MessageUtil {
       const groupData = {
         //taskUuid
         task: taskUuid,
+        title: title,
         active: true,
         boss: {
           id: bossUuid,

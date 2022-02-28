@@ -70,6 +70,7 @@ export class MessageManager {
 
     const newMessageGroupKey = await this.messageService.createMessageGroup(
       taskUuid,
+      task.title,
       heroUuid,
       task.bossUserUuid,
       bossRandomName,

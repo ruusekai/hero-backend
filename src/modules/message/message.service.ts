@@ -22,6 +22,7 @@ export class MessageService {
 
   async createMessageGroup(
     taskUuid: string,
+    title: string,
     heroUuid: string,
     bossUuid: string,
     bossName: string,
@@ -29,6 +30,7 @@ export class MessageService {
   ) {
     return await this.messageUtil.createMessageGroup(
       taskUuid,
+      title,
       bossUuid,
       heroUuid,
       bossName,

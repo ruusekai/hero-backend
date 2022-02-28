@@ -68,7 +68,7 @@ create table if not exists user_kyc
     selfie_file_uuid varchar(255) not null,
     full_name varchar(1000) not null,
     kyc_id_number varchar(255) not null,
-    admin_status varchar(255) not null,
+    admin_status varchar(255) not null default 'pending',
     decline_reason varchar(255),
     admin_remarks varchar(5000),
     is_deleted int default 0 not null,

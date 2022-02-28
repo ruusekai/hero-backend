@@ -24,7 +24,7 @@ create table if not exists task
     total_charge_amt decimal(10,2) not null,
     currency varchar(255) default 'HKD' not null,
 
-    admin_status varchar(255) not null,
+    admin_status varchar(255) not null default 'pending',
     decline_reason varchar(255),
     admin_remarks varchar(5000),
 

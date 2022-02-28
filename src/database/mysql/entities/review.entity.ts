@@ -1,6 +1,8 @@
 import { Column, Entity, Generated } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { MessageUserRoleType } from '../../../modules/message/enum/message-user-role-type';
+import { AdminApprovalStatus } from '../../../common/enum/admin.approval.status';
+import { AdminDeclineReason } from '../../../common/enum/admin.decline.reason';
 
 @Entity()
 export class Review extends BaseEntity {
@@ -56,4 +58,13 @@ export class Review extends BaseEntity {
 
   @Column({ name: 'description' })
   description: string;
+
+  @Column({ name: 'admin_status' })
+  adminStatus: AdminApprovalStatus;
+
+  @Column({ name: 'decline_reason' })
+  declineReason: AdminDeclineReason;
+
+  @Column({ name: 'admin_remarks' })
+  adminRemarks: string;
 }

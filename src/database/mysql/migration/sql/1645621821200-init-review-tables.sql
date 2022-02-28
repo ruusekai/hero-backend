@@ -14,6 +14,10 @@ create table if not exists review
     score int not null,
     description varchar(1000) not null,
 
+    admin_status varchar(255) not null default 'pending',
+    decline_reason varchar(255),
+    admin_remarks varchar(5000),
+
     is_deleted int default 0 not null,
     version int default 1 not null,
     created_date timestamp default CURRENT_TIMESTAMP not null,

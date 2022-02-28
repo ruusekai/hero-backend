@@ -3,6 +3,7 @@ import { EntityRepository, Repository } from 'typeorm';
 import { ResponseCode } from '../../../common/response/response.code';
 import { ApiException } from '../../../common/exception/api.exception';
 import { Review } from '../entities/review.entity';
+import { AdminApprovalStatus } from '../../../common/enum/admin.approval.status';
 
 @EntityRepository(Review)
 @Injectable()
@@ -16,6 +17,12 @@ export class ReviewRepository extends Repository<Review> {
       .where('review.target_user_uuid = :userUuid', {
         userUuid: userUuid,
       })
+      .andWhere('review.admin_status = :adminStatus', {
+        adminStatus: AdminApprovalStatus.APPROVED,
+      })
+      .andWhere('review.is_deleted = :isDeleted', {
+        isDeleted: false,
+      })
       .select(`AVG(review.score)`, 'average_score');
     return await queryBuilder.getRawOne();
   }
@@ -23,7 +30,11 @@ export class ReviewRepository extends Repository<Review> {
   async findReviewByTargetUserUuid(userUuid: string): Promise<Review[]> {
     try {
       return await this.find({
-        where: { targetUserUuid: userUuid, isDeleted: false },
+        where: {
+          targetUserUuid: userUuid,
+          adminStatus: AdminApprovalStatus.APPROVED,
+          isDeleted: false,
+        },
       });
     } catch (e) {
       console.log(JSON.stringify(e.stack));

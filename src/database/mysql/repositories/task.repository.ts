@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityRepository, Repository } from 'typeorm';
+import { Brackets, EntityRepository, Repository } from 'typeorm';
 import { ResponseCode } from '../../../common/response/response.code';
 import { ApiException } from '../../../common/exception/api.exception';
 import { Task } from '../entities/task.entity';
@@ -114,6 +114,20 @@ export class TaskRepository extends Repository<Task> {
             maxHeroRewardAmt: queryInput.maxHeroRewardAmt,
           },
         );
+      }
+      if (queryInput.keywords) {
+        queryInput.keywords.forEach((keyword) => {
+          queryBuilder.andWhere(
+            new Brackets((qb) => {
+              qb.where(
+                'task.title like :keyword or task.description like :keyword',
+                {
+                  keyword: `%${keyword}%`,
+                },
+              );
+            }),
+          );
+        });
       }
 
       return await paginateRaw(queryBuilder, iPaginationOptions);

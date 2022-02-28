@@ -102,6 +102,11 @@ export class TaskManager {
         ? findTaskReqDto.maxHeroRewardAmt
         : 9999999;
     }
+    //keyword
+    const keywords: string[] = findTaskReqDto.keywords
+      ? decodeURI(findTaskReqDto.keywords).split(' ')
+      : null;
+    this.logger.log(`keywords: ${JSON.stringify(keywords)}`);
 
     const options: any = {};
     options.districtIds = districtIds;
@@ -114,6 +119,7 @@ export class TaskManager {
     options.orderDirection = findTaskReqDto.orderDirection
       ? findTaskReqDto.orderDirection
       : OrderDirection.ASC;
+    options.keywords = keywords;
 
     const response =
       await this.taskService.findApprovedAndPaidAndAvailableTaskWithRawPaginate(

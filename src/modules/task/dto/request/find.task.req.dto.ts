@@ -28,4 +28,8 @@ export class FindTaskReqDto extends PaginateReqDto {
   @IsOptional()
   @IsEnum(OrderDirection)
   orderDirection: OrderDirection;
+
+  @IsOptional()
+  //keywords with space as delimiter
+  keywords: string;
 }

@@ -9,5 +9,6 @@ import { MySqlRepositoryModule } from '../../database/mysql/repositories/mysql.r
   imports: [MySqlRepositoryModule, TaskMatchingAttemptModule],
   controllers: [ReviewController],
   providers: [ReviewManager, ReviewService],
+  exports: [ReviewService],
 })
 export class ReviewModule {}

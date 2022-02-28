@@ -54,6 +54,8 @@ export class TaskMatchingAttemptManager {
         userUuid,
       );
     switch (action) {
+      case MatchingAttemptAction.HERO_CANCEL_MESSAGE_GROUP:
+        return await this.heroCancelMessageGroup(matchingAttempt, userUuid);
       case MatchingAttemptAction.HERO_SEND_MATCHING:
         return await this.heroSendMatching(matchingAttempt, userUuid);
       case MatchingAttemptAction.BOSS_REJECT_MATCHING:
@@ -304,22 +306,16 @@ export class TaskMatchingAttemptManager {
       `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
     );
 
-    //2. save the attempt and task
-    matchingAttempt.status = newMatchingStatus;
-    matchingAttempt.isMatched = false;
-    matchingAttempt = await this.matchingAttemptService.saveTaskMatchingAttempt(
-      matchingAttempt,
-    );
-    //save the task and restart posting (not repost)
-    await this.matchingAttemptService.updateTaskAndRestartPostingDueToHeroCancel(
-      matchingAttempt,
-    );
-
-    //3. close this chatroom
+    //2. save the attempt and close chatroom
     await this.matchingAttemptService.disableMatchingAttemptAndCloseMessageGroupAndCreateHistory(
       matchingAttempt,
       newMatchingStatus,
       MessageUserRoleType.HERO,
+    );
+
+    //3. save the task and restart posting (not repost)
+    await this.matchingAttemptService.updateTaskAndRestartPostingDueToHeroCancel(
+      matchingAttempt,
     );
 
     //4. send notification to boss
@@ -421,32 +417,27 @@ export class TaskMatchingAttemptManager {
       `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
     );
 
-    //2.save the attempt and task
-    matchingAttempt.status = newMatchingStatus;
-    matchingAttempt = await this.matchingAttemptService.saveTaskMatchingAttempt(
-      matchingAttempt,
-    );
-
-    //3. close this chatroom
+    //2. save the attempt and close this chatroom
     await this.matchingAttemptService.disableMatchingAttemptAndCloseMessageGroupAndCreateHistory(
       matchingAttempt,
       newMatchingStatus,
       MessageUserRoleType.BOSS,
+      true,
     );
 
-    //4. send notification to hero (no await)
+    //3. send notification to hero (no await)
     this.pushService.createNotificationByTemplate(
       matchingAttempt.heroUserUuid,
       PushTemplateName.BOSS_ACCEPT_DONE,
       matchingAttempt.messageGroupId,
     );
 
-    //5. add reward to hero wallet
+    //4. add reward to hero wallet
     await this.walletService.addHeroRewardAmtToHeroWalletByMatchingAttempt(
       matchingAttempt,
     );
 
-    //6. save attempt history
+    //5. save attempt history
     const historyEntity: TaskHistory = new TaskHistory(
       matchingAttempt.taskUuid,
       matchingAttempt.messageGroupId,
@@ -504,6 +495,55 @@ export class TaskMatchingAttemptManager {
       matchingAttempt.messageGroupId,
       matchingAttempt.bossUserUuid,
       MessageUserRoleType.BOSS,
+      MatchingHistoryActionType.STATUS_CHANGE,
+      currentMatchingStatus,
+      newMatchingStatus,
+    );
+    await this.matchingAttemptService.saveTaskHistory(historyEntity);
+
+    const rsp = new TaskMatchingAttemptRspDto(matchingAttempt);
+    return new AppResponse(rsp);
+  }
+
+  async heroCancelMessageGroup(
+    matchingAttempt: TaskMatchingAttempt,
+    userUuid: string,
+  ) {
+    const currentMatchingStatus: TaskMatchingAttemptStatus =
+      matchingAttempt.status;
+    const newMatchingStatus: TaskMatchingAttemptStatus =
+      TaskMatchingAttemptStatus.HERO_CANCEL_MESSAGE_GROUP;
+
+    //1.checking
+    //only hero can do
+    if (userUuid !== matchingAttempt.heroUserUuid) {
+      throw new ApiException(ResponseCode.STATUS_4013_FORBIDDEN);
+    } else if (
+      //only matched task can do
+      matchingAttempt.status !== TaskMatchingAttemptStatus.CREATED_MESSAGE_GROUP
+    ) {
+      this.logger.error(`invalid attempt status: ${matchingAttempt.status}`);
+      throw new ApiException(
+        ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
+      );
+    }
+    this.logger.log(
+      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+    );
+
+    //2. save the attempt and close this chatroom
+    await this.matchingAttemptService.disableMatchingAttemptAndCloseMessageGroupAndCreateHistory(
+      matchingAttempt,
+      newMatchingStatus,
+      MessageUserRoleType.HERO,
+    );
+
+    //3. save attempt history
+    const historyEntity: TaskHistory = new TaskHistory(
+      matchingAttempt.taskUuid,
+      matchingAttempt.messageGroupId,
+      matchingAttempt.heroUserUuid,
+      MessageUserRoleType.HERO,
       MatchingHistoryActionType.STATUS_CHANGE,
       currentMatchingStatus,
       newMatchingStatus,

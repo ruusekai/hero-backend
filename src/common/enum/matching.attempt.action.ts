@@ -1,4 +1,5 @@
 export enum MatchingAttemptAction {
+  HERO_CANCEL_MESSAGE_GROUP = 'hero-cancel-message-group',
   HERO_SEND_MATCHING = 'hero-send-matching',
   BOSS_REJECT_MATCHING = 'boss-reject-matching',
   BOSS_ACCEPT_MATCHING = 'boss-accept-matching',

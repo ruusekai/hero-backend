@@ -183,10 +183,22 @@ export class ResponseCode {
       'INVALID_TASK_MATCHING_ATTEMPT_ACTION',
     );
 
+  public static readonly STATUS_7013_TASK_ALREADY_MATCHED = new ResponseStatus(
+    7013,
+    'TASK_ALREADY_MATCHED',
+    'TASK_ALREADY_MATCHED',
+  );
+
   public static readonly STATUS_7100_ALREADY_REVIEWED = new ResponseStatus(
     7100,
     'ALREADY_REVIEWED',
     'ALREADY_REVIEWED',
+  );
+
+  public static readonly STATUS_7200_PAYMENT_REQUIRED = new ResponseStatus(
+    7200,
+    'PAYMENT_REQUIRED',
+    'PAYMENT_REQUIRED',
   );
 
   //messaging
@@ -230,6 +242,12 @@ export class ResponseCode {
     'one signal error',
   );
 
+  public static readonly STATUS_8200_SELF_REPORT_NOT_ALLOWED =
+    new ResponseStatus(
+      8200,
+      'SELF_REPORT_NOT_ALLOWED ',
+      'SELF_REPORT_NOT_ALLOWED',
+    );
   //system error
   public static readonly STATUS_9999_SYSTEM_ERROR = new ResponseStatus(
     9999,

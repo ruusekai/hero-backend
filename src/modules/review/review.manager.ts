@@ -119,7 +119,9 @@ export class ReviewManager {
   async findReviewAverageScore(userUuid: string) {
     const avgScore: number =
       await this.reviewService.avgReviewScoreByTargetUserUuid(userUuid);
-    const rsp = new FindReviewAverageScoreRspDto(avgScore);
+    const rsp = new FindReviewAverageScoreRspDto(
+      avgScore == null ? 0 : avgScore,
+    );
     return new AppResponse(rsp);
   }
   async findAllReviewWithTargetUserUuid(userUuid: string) {

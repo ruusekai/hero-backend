@@ -59,7 +59,10 @@ export class MessageManager {
       throw new ApiException(
         ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
       );
+    } else if (task.heroUserUuid != null) {
+      throw new ApiException(ResponseCode.STATUS_7013_TASK_ALREADY_MATCHED);
     }
+
     const bossRandomName: string =
       'boss-' + (await this.messageService.getRandomNumberWithFourDigits());
     const heroRandomName: string =

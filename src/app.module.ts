@@ -30,6 +30,7 @@ import { PushModule } from './modules/push/push.module';
 import { TaskMatchingAttemptModule } from './task-matching-attempt/task-matching-attempt.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { ReviewModule } from './modules/review/review.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ReviewModule } from './modules/review/review.module';
     TaskMatchingAttemptModule,
     WalletModule,
     ReviewModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [

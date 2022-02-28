@@ -11,6 +11,7 @@ export enum TaskMatchingAttemptStatus {
   HERO_DONE_TASK = 'hero-done-task', //任務已完成
 
   BOSS_ACCEPT_DONE = 'boss-accept-done', //任務已確認- chatroom closed
+  HERO_CANCEL_MESSAGE_GROUP = 'hero-cancel-message-group',
   HERO_CANCEL_MATCHING = 'hero-cancel-matching', //任務已取消- chatroom closed
   ABNORMAL = 'abnormal',
   // including hero cancelled/boss cancelled before match

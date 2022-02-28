@@ -24,6 +24,8 @@ import { MatchingHistoryActionType } from './enum/matching-history-action-type';
 import { TaskPaymentStatus } from './enum/task.payment.status';
 import { TaskMatchingAttemptRspDto } from '../../task-matching-attempt/dto/entity/task-matching-attempt-rsp-dto';
 import { TaskWithMatchingAttemptDto } from './dto/entity/task.with.matching.attempt.dto';
+import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
+import { TaskDetailDto } from './dto/entity/task.detail.dto';
 
 @Injectable()
 export class TaskManager {
@@ -292,6 +294,75 @@ export class TaskManager {
         );
       }),
     );
+    return new AppResponse(rsp);
+  }
+
+  async repostTaskByBoss(userUuid: string, taskUuid: string) {
+    const taskEntity: Task = await this.taskService.findOneTaskByUuid(taskUuid);
+    this.logger.log(
+      `[cancelTaskByBoss] trying to re-posting task: ${JSON.stringify(
+        taskEntity,
+      )}`,
+    );
+    //only boss can repost
+    //only paid, approved, not-matched, expired task can repost
+    if (taskEntity == null) {
+      throw new ApiException(ResponseCode.STATUS_7010_TASK_NOT_EXIST);
+    } else if (taskEntity.bossUserUuid !== userUuid) {
+      throw new ApiException(ResponseCode.STATUS_4013_FORBIDDEN);
+    } else if (taskEntity.postStatus !== TaskPostStatus.EXPIRED) {
+      //check post status
+      this.logger.error(
+        `[repost] post-status is not expired: ${taskEntity.postStatus}, expiryDate: ${taskEntity.expiryDate}, createdDate: ${taskEntity.createdDate} `,
+      );
+      throw new ApiException(ResponseCode.STATUS_4013_FORBIDDEN);
+    } else if (taskEntity.adminStatus !== AdminApprovalStatus.APPROVED) {
+      //check post status
+      this.logger.error(
+        `[repost] post-status is not allowed as admin not approved `,
+      );
+      throw new ApiException(ResponseCode.STATUS_4013_FORBIDDEN);
+    } else if (
+      //check payment status
+      !(
+        taskEntity.paymentStatus === TaskPaymentStatus.REQUIRES_CAPTURE ||
+        taskEntity.paymentStatus === TaskPaymentStatus.SUCCEEDED
+      )
+    ) {
+      this.logger.error(`[repost] payment not done, can't repost`);
+      throw new ApiException(ResponseCode.STATUS_7200_PAYMENT_REQUIRED);
+    } else if (taskEntity.heroUserUuid != null) {
+      this.logger.error(`[repost] matched task cannot be repost`);
+      throw new ApiException(
+        ResponseCode.STATUS_7011_MATCHED_TASK_CANNOT_BE_CANCELLED_BY_BOSS,
+      );
+    }
+    //todo: expiry date no UI???
+    const newExpiryDate: Date = null;
+
+    let newTask: Task = new Task(
+      taskEntity.bossUserUuid,
+      taskEntity.banner,
+      taskEntity.title,
+      taskEntity.description,
+      taskEntity.regionId,
+      taskEntity.districtId,
+      taskEntity.address,
+      taskEntity.latitude,
+      taskEntity.longitude,
+      newExpiryDate,
+      taskEntity.basicCostAmt,
+      taskEntity.heroRewardAmt,
+      taskEntity.serviceChargeAmt,
+      taskEntity.totalChargeAmt,
+      'HKD',
+      taskEntity.adminStatus,
+      taskEntity.paymentStatus,
+    );
+    newTask.paymentIntentId = taskEntity.paymentIntentId;
+
+    newTask = await this.taskService.saveTask(newTask);
+    const rsp = new TaskDetailDto(newTask);
     return new AppResponse(rsp);
   }
 }

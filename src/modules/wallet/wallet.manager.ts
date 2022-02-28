@@ -17,7 +17,8 @@ export class WalletManager {
 
   async getHeroWalletBalance(userUuid: string): Promise<AppResponse> {
     const result = await this.walletService.sumHeroWalletBalance(userUuid);
-    const rsp = new GetHeroWalletBalanceRspDto(result);
+
+    const rsp = new GetHeroWalletBalanceRspDto(result == null ? 0 : result);
     return new AppResponse(rsp);
   }
 

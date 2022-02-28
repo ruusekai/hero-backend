@@ -22,4 +22,8 @@ export class ReviewService {
   async findReviewByTargetUserUuid(targetUserUuid: string): Promise<Review[]> {
     return await this.reviewRepo.findReviewByTargetUserUuid(targetUserUuid);
   }
+
+  async findOneReviewByUuid(reviewUuid: string): Promise<Review> {
+    return await this.reviewRepo.findOneReviewByUuid(reviewUuid);
+  }
 }

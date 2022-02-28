@@ -59,7 +59,7 @@ export class FileController {
     }
   }
 
-  @Post('/upload/:fileCategory')
+  @Post('/upload/:fileCategory/:refId')
   @UseInterceptors(
     FileInterceptor('file', {
       dest: 'public/image/temp',
@@ -68,6 +68,7 @@ export class FileController {
   )
   async uploadFile(
     @Param('fileCategory') fileCategory: FileCategory,
+    @Param('refId') refId: string,
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
   ) {
@@ -76,6 +77,13 @@ export class FileController {
       this.logger.log('file: ' + JSON.stringify(file));
       if (fileCategory === FileCategory.KYC) {
         newPathOnly = `public/image/user/${req.user.uuid}`;
+      } else if (fileCategory === FileCategory.MESSAGE) {
+        if (refId == null) {
+          throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
+        }
+        newPathOnly = `public/image/message/${refId}`;
+      } else {
+        throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
       }
       return this.fileManager.uploadFile(newPathOnly, file);
     } else {

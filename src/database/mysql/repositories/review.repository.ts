@@ -31,6 +31,17 @@ export class ReviewRepository extends Repository<Review> {
     }
   }
 
+  async findOneReviewByUuid(userUuid: string): Promise<Review> {
+    try {
+      return await this.findOne({
+        where: { userUuid: userUuid, isDeleted: false },
+      });
+    } catch (e) {
+      console.log(JSON.stringify(e.stack));
+      throw new ApiException(ResponseCode.STATUS_5001_DATABASE_ERROR, e);
+    }
+  }
+
   async saveReview(review: Review): Promise<Review> {
     try {
       review.updatedDate = new Date(Date.now());

@@ -116,7 +116,8 @@ export class TaskMatchingAttemptService {
     entity: TaskMatchingAttempt,
     status: TaskMatchingAttemptStatus,
     userRole: MessageUserRoleType,
-  ) {
+    isMatched = false,
+  ): Promise<TaskMatchingAttempt> {
     //1. disable chatroom
     await this.messageService.disableMessageGroupById(entity.messageGroupId);
     //2. create history
@@ -133,12 +134,11 @@ export class TaskMatchingAttemptService {
     );
     await this.saveTaskHistory(histroy);
     //3. update matching attempt
-    entity.isMatched = false;
+    entity.isMatched = isMatched;
     entity.isMessageGroupActive = false;
     entity.status = status;
+    entity = await this.saveTaskMatchingAttempt(entity);
     return entity;
-    await this.saveTaskMatchingAttempt(entity);
-    return true;
   }
 
   async updateMatchedTaskAndStopPosting(

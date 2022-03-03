@@ -26,6 +26,7 @@ import { HeroWalletHistoryRepository } from './hero.wallet.history.repository';
 import { HeroWalletDepositRepository } from './hero.wallet.deposit.repository';
 import { ReviewRepository } from './review.repository';
 import { ReportRepository } from './report.repository';
+import { HeroWalletWithdrawalRequestRepository } from './hero.wallet.withdrawal.request.repository';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ReportRepository } from './report.repository';
       TaskHistoryRepository,
       HeroWalletHistoryRepository,
       HeroWalletDepositRepository,
+      HeroWalletWithdrawalRequestRepository,
       ReviewRepository,
       ReportRepository,
     ]),

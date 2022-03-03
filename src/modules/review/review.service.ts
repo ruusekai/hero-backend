@@ -13,10 +13,7 @@ export class ReviewService {
   async avgReviewScoreByTargetUserUuid(
     targetUserUuid: string,
   ): Promise<number> {
-    const result = await this.reviewRepo.avgReviewScoreByTargetUserUuid(
-      targetUserUuid,
-    );
-    return result.average_score;
+    return await this.reviewRepo.avgReviewScoreByTargetUserUuid(targetUserUuid);
   }
 
   async findReviewByTargetUserUuid(targetUserUuid: string): Promise<Review[]> {

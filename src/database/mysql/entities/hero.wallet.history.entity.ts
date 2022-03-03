@@ -1,6 +1,7 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { WalletHistoryType } from '../../../modules/wallet/enum/wallet.history.type';
+import { ColumnNumericTransformer } from '../../../common/transformer/column.numeric.transformer';
 
 @Entity()
 export class HeroWalletHistory extends BaseEntity {
@@ -26,6 +27,11 @@ export class HeroWalletHistory extends BaseEntity {
   @Column({ name: 'type' })
   type: WalletHistoryType;
 
-  @Column({ name: 'amount' })
+  @Column('numeric', {
+    precision: 7,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+    name: 'amount',
+  })
   amount: number;
 }

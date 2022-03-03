@@ -12,7 +12,7 @@ export class ReviewRepository extends Repository<Review> {
     super();
   }
 
-  async avgReviewScoreByTargetUserUuid(userUuid: string): Promise<any> {
+  async avgReviewScoreByTargetUserUuid(userUuid: string): Promise<number> {
     const queryBuilder = this.createQueryBuilder('review')
       .where('review.target_user_uuid = :userUuid', {
         userUuid: userUuid,
@@ -24,7 +24,10 @@ export class ReviewRepository extends Repository<Review> {
         isDeleted: false,
       })
       .select(`AVG(review.score)`, 'average_score');
-    return await queryBuilder.getRawOne();
+
+    const result = await queryBuilder.getRawOne();
+    console.log(result.average_score);
+    return result.average_score == null ? 0 : +result.average_score;
   }
 
   async findReviewByTargetUserUuid(userUuid: string): Promise<Review[]> {

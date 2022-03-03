@@ -201,6 +201,13 @@ export class ResponseCode {
     'PAYMENT_REQUIRED',
   );
 
+  public static readonly STATUS_7201_INVALID_WITHDRAWAL_AMT =
+    new ResponseStatus(
+      7201,
+      'INVALID_WITHDRAWAL_AMT',
+      'INVALID_WITHDRAWAL_AMT',
+    );
+
   //messaging
   public static readonly STATUS_8000_FIREBASE_ERROR = new ResponseStatus(
     8000,

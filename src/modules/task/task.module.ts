@@ -8,7 +8,7 @@ import { PaymentUtilModule } from '../../utils/payment/payment.util.module';
 import { UserModule } from '../user/user.module';
 import { MessageModule } from '../message/message.module';
 import { PushModule } from '../push/push.module';
-import { TaskMatchingAttemptModule } from '../../task-matching-attempt/task-matching-attempt.module';
+import { TaskMatchingAttemptModule } from '../task-matching-attempt/task-matching-attempt.module';
 import { PaymentModule } from '../payment/payment.module';
 
 @Module({

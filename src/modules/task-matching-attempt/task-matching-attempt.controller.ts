@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Patch, Request } from '@nestjs/common';
 import { TaskMatchingAttemptManager } from './task-matching-attempt.manager';
-import { MatchingAttemptAction } from '../common/enum/matching.attempt.action';
+import { MatchingAttemptAction } from '../../common/enum/matching.attempt.action';
 
 @Controller('task-matching-attempt')
 export class TaskMatchingAttemptController {

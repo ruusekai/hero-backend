@@ -1,5 +1,5 @@
-import { TaskMatchingAttemptStatus } from '../../../modules/task/enum/matching-attempt-status';
-import { TaskMatchingAttempt } from '../../../database/mysql/entities/task.matching.attempt.entity';
+import { TaskMatchingAttemptStatus } from '../../../task/enum/matching-attempt-status';
+import { TaskMatchingAttempt } from '../../../../database/mysql/entities/task.matching.attempt.entity';
 
 export class TaskMatchingAttemptRspDto {
   constructor(matchingAttempt: TaskMatchingAttempt) {

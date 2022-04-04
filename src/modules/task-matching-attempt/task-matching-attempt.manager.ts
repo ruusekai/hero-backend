@@ -1,21 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AppResponse } from '../common/response/app.response';
+import { AppResponse } from '../../common/response/app.response';
 import { TaskMatchingAttemptService } from './task-matching-attempt.service';
-import { ApiException } from '../common/exception/api.exception';
-import { ResponseCode } from '../common/response/response.code';
-import { TaskMatchingAttempt } from '../database/mysql/entities/task.matching.attempt.entity';
-import { MatchingAttemptAction } from '../common/enum/matching.attempt.action';
-import { TaskMatchingAttemptStatus } from '../modules/task/enum/matching-attempt-status';
-import { MessageUserRoleType } from '../modules/message/enum/message-user-role-type';
-import { MatchingHistoryActionType } from '../modules/task/enum/matching-history-action-type';
+import { ApiException } from '../../common/exception/api.exception';
+import { ResponseCode } from '../../common/response/response.code';
+import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
+import { MatchingAttemptAction } from '../../common/enum/matching.attempt.action';
+import { TaskMatchingAttemptStatus } from '../task/enum/matching-attempt-status';
+import { MessageUserRoleType } from '../message/enum/message-user-role-type';
+import { MatchingHistoryActionType } from '../task/enum/matching-history-action-type';
 import { TaskMatchingAttemptRspDto } from './dto/entity/task-matching-attempt-rsp-dto';
-import { PushService } from '../modules/push/push.service';
-import { PushTemplateName } from '../common/enum/push.template.name';
-import { PaymentService } from '../modules/payment/payment.service';
-import { Task } from '../database/mysql/entities/task.entity';
-import { TaskHistory } from '../database/mysql/entities/task.history.entity';
-import { WalletService } from '../modules/wallet/wallet.service';
-import { TaskRepository } from '../database/mysql/repositories/task.repository';
+import { PushService } from '../push/push.service';
+import { PushTemplateName } from '../../common/enum/push.template.name';
+import { PaymentService } from '../payment/payment.service';
+import { Task } from '../../database/mysql/entities/task.entity';
+import { TaskHistory } from '../../database/mysql/entities/task.history.entity';
+import { WalletService } from '../wallet/wallet.service';
+import { TaskRepository } from '../../database/mysql/repositories/task.repository';
 
 @Injectable()
 export class TaskMatchingAttemptManager {

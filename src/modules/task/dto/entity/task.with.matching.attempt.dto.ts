@@ -1,6 +1,6 @@
 import { TaskCategory } from '../../enum/task.category';
 import { TaskPostStatus } from '../../enum/task-post-status';
-import { TaskMatchingAttemptRspDto } from '../../../../task-matching-attempt/dto/entity/task-matching-attempt-rsp-dto';
+import { TaskMatchingAttemptRspDto } from '../../../task-matching-attempt/dto/entity/task-matching-attempt-rsp-dto';
 import { Task } from '../../../../database/mysql/entities/task.entity';
 import { AdminApprovalStatus } from '../../../../common/enum/admin.approval.status';
 import { TaskPaymentStatus } from '../../enum/task.payment.status';

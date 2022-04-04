@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { TaskMatchingAttempt } from '../database/mysql/entities/task.matching.attempt.entity';
-import { TaskMatchingAttemptRepository } from '../database/mysql/repositories/task.matching.attempt.repository';
-import { ApiException } from '../common/exception/api.exception';
-import { ResponseCode } from '../common/response/response.code';
-import { TaskMatchingAttemptStatus } from '../modules/task/enum/matching-attempt-status';
-import { MessageService } from '../modules/message/message.service';
-import { TaskRepository } from '../database/mysql/repositories/task.repository';
-import { Task } from '../database/mysql/entities/task.entity';
-import { TaskPostStatus } from '../modules/task/enum/task-post-status';
-import { MessageUserRoleType } from '../modules/message/enum/message-user-role-type';
-import { MatchingHistoryActionType } from '../modules/task/enum/matching-history-action-type';
-import { TaskHistoryRepository } from '../database/mysql/repositories/task.history.repository';
-import { TaskHistory } from '../database/mysql/entities/task.history.entity';
+import { TaskMatchingAttempt } from '../../database/mysql/entities/task.matching.attempt.entity';
+import { TaskMatchingAttemptRepository } from '../../database/mysql/repositories/task.matching.attempt.repository';
+import { ApiException } from '../../common/exception/api.exception';
+import { ResponseCode } from '../../common/response/response.code';
+import { TaskMatchingAttemptStatus } from '../task/enum/matching-attempt-status';
+import { MessageService } from '../message/message.service';
+import { TaskRepository } from '../../database/mysql/repositories/task.repository';
+import { Task } from '../../database/mysql/entities/task.entity';
+import { TaskPostStatus } from '../task/enum/task-post-status';
+import { MessageUserRoleType } from '../message/enum/message-user-role-type';
+import { MatchingHistoryActionType } from '../task/enum/matching-history-action-type';
+import { TaskHistoryRepository } from '../../database/mysql/repositories/task.history.repository';
+import { TaskHistory } from '../../database/mysql/entities/task.history.entity';
 
 @Injectable()
 export class TaskMatchingAttemptService {

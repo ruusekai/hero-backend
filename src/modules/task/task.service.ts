@@ -8,7 +8,7 @@ import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { TaskPaymentStatus } from './enum/task.payment.status';
 import { MessageService } from '../message/message.service';
 import { PushService } from '../push/push.service';
-import { TaskMatchingAttemptService } from '../../task-matching-attempt/task-matching-attempt.service';
+import { TaskMatchingAttemptService } from '../task-matching-attempt/task-matching-attempt.service';
 
 @Injectable()
 export class TaskService {

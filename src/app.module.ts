@@ -27,7 +27,7 @@ import { MessageModule } from './modules/message/message.module';
 import { MessageWebTestModule } from './modules/message-web-test/message-web-test.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { PushModule } from './modules/push/push.module';
-import { TaskMatchingAttemptModule } from './task-matching-attempt/task-matching-attempt.module';
+import { TaskMatchingAttemptModule } from './modules/task-matching-attempt/task-matching-attempt.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { ReviewModule } from './modules/review/review.module';
 import { ReportModule } from './modules/report/report.module';

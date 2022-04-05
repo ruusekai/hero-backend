@@ -1,5 +1,5 @@
 import { Body, Controller, Param, Post, Request } from '@nestjs/common';
-import { CreateTaskPaymentReqDto } from './dto/create.task.payment.req.dto';
+import { CreateTaskPaymentReqDto } from './dto/request/create.task.payment.req.dto';
 import { PaymentManager } from './payment.manager';
 import { RequiredHeader } from '../../common/decorator/required.header.decorator';
 import { Public } from '../../common/decorator/public.endpoint.decorator';

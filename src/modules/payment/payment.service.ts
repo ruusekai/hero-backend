@@ -4,7 +4,7 @@ import { UserService } from '../user/user.service';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
 import { CouponType } from './enum/coupon.type';
-import { CreateTaskPaymentReqDto } from './dto/create.task.payment.req.dto';
+import { CreateTaskPaymentReqDto } from './dto/request/create.task.payment.req.dto';
 import { PaymentIntentRepository } from '../../database/mysql/repositories/payment.intent.repository';
 import { PaymentIntent } from '../../database/mysql/entities/payment.intent.entity';
 import { StripeWebhook } from '../../database/mysql/entities/stripe.webhook.entity';

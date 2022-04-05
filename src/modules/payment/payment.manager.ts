@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { CreateTaskPaymentReqDto } from './dto/create.task.payment.req.dto';
+import { CreateTaskPaymentReqDto } from './dto/request/create.task.payment.req.dto';
 import { AppResponse } from '../../common/response/app.response';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
@@ -13,6 +13,7 @@ import { PaymentIntent } from '../../database/mysql/entities/payment.intent.enti
 import { StripeWebhook } from '../../database/mysql/entities/stripe.webhook.entity';
 import { TaskRepository } from '../../database/mysql/repositories/task.repository';
 import { UserCoupon } from '../../database/mysql/entities/user.coupon.entity';
+import { CreateTaskPaymentRspDto } from './dto/response/create.task.payment.rsp.dto';
 
 @Injectable()
 export class PaymentManager {
@@ -90,6 +91,7 @@ export class PaymentManager {
       user.stripeCustomerId = customerId;
       await this.userService.saveUser(user);
     }
+    const ephemeralKey = await this.paymentUtil.createEphemeralKeys(customerId);
     this.logger.log('calcFinalChargeAmt: ' + calcFinalChargeAmt);
     const paymentIntent =
       await this.paymentUtil.createStripePaymentIntentWithCreditHold(
@@ -98,7 +100,7 @@ export class PaymentManager {
         user.uuid,
         taskEntity.uuid,
       );
-    let paymentIntentEntity = new PaymentIntent();
+    let paymentIntentEntity: PaymentIntent = new PaymentIntent();
     paymentIntentEntity.userUuid = user.uuid;
     paymentIntentEntity.stripeCustomerId = user.stripeCustomerId;
     paymentIntentEntity.stripePaymentIntentId = paymentIntent.id;
@@ -129,7 +131,13 @@ export class PaymentManager {
     taskEntity.paymentStatus = paymentIntent.status;
     await this.taskRepository.saveTask(taskEntity);
 
-    return new AppResponse(paymentIntentEntity);
+    const rsp: CreateTaskPaymentRspDto = new CreateTaskPaymentRspDto(
+      ephemeralKey,
+      paymentIntent.client_secret,
+      this.paymentUtil.getStripePublicKey(),
+      paymentIntentEntity,
+    );
+    return new AppResponse(rsp);
   }
 
   async stripeWebhook(webhookBody, sig) {

@@ -41,6 +41,10 @@ export class PaymentUtil {
     );
   }
 
+  getStripePublicKey(): string {
+    return this.configService.get<string>('payment.STRIPE_PUBLIC_KEY');
+  }
+
   async createStripeCustomer(user: User) {
     try {
       const customer: Stripe.Customer = await this.stripe.customers.create({
@@ -149,6 +153,19 @@ export class PaymentUtil {
       );
       this.logger.log(`paymentIntent: ${JSON.stringify(paymentIntent)}`);
       return paymentIntent;
+    } catch (e) {
+      this.logger.log(JSON.stringify(e.stack));
+      throw new ApiException(ResponseCode.STATUS_7007_STRIPE_ERROR, e);
+    }
+  }
+
+  async createEphemeralKeys(customerId: string) {
+    try {
+      const ephemeralKey = await this.stripe.ephemeralKeys.create(
+        { customer: customerId },
+        { apiVersion: '2020-08-27' },
+      );
+      return ephemeralKey;
     } catch (e) {
       this.logger.log(JSON.stringify(e.stack));
       throw new ApiException(ResponseCode.STATUS_7007_STRIPE_ERROR, e);

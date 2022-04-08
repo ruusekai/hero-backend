@@ -27,6 +27,8 @@ import { HeroWalletDepositRepository } from './hero.wallet.deposit.repository';
 import { ReviewRepository } from './review.repository';
 import { ReportRepository } from './report.repository';
 import { HeroWalletWithdrawalRequestRepository } from './hero.wallet.withdrawal.request.repository';
+import { BankRepository } from './bank.repository';
+import { UserBankRepository } from './user.bank.repository';
 
 @Module({
   imports: [
@@ -58,6 +60,8 @@ import { HeroWalletWithdrawalRequestRepository } from './hero.wallet.withdrawal.
       HeroWalletWithdrawalRequestRepository,
       ReviewRepository,
       ReportRepository,
+      BankRepository,
+      UserBankRepository,
     ]),
   ],
   providers: [],

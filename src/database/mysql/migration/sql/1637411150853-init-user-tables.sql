@@ -201,3 +201,49 @@ create table if not exists user_profile
     foreign key (user_uuid) references user (uuid)
 );
 
+
+
+create table if not exists bank
+(
+    code varchar(3) primary key,
+    zh_name varchar(1000),
+    en_name varchar(1000),
+    is_virtual_bank int default 0 not null,
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null
+);
+
+
+
+
+
+create table if not exists user_bank
+(
+    id int auto_increment
+    primary key,
+    uuid varchar(255) not null,
+    user_uuid varchar(255) not null,
+    banking_card_file_uuid varchar(255) not null,
+    full_name varchar(1000) not null,
+    bank_code varchar(3) not null,
+    bank_number varchar(255) not null,
+    admin_status varchar(255) not null default 'pending',
+    decline_reason varchar(255),
+    admin_remarks varchar(5000),
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint user_bank_user_uuid_fk
+    foreign key (user_uuid) references user (uuid),
+    constraint user_bank_uindex
+    unique (uuid)
+);
+
+

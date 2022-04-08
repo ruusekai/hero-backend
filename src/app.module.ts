@@ -31,6 +31,7 @@ import { TaskMatchingAttemptModule } from './modules/task-matching-attempt/task-
 import { WalletModule } from './modules/wallet/wallet.module';
 import { ReviewModule } from './modules/review/review.module';
 import { ReportModule } from './modules/report/report.module';
+import { BankModule } from './modules/bank/bank.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ReportModule } from './modules/report/report.module';
     WalletModule,
     ReviewModule,
     ReportModule,
+    BankModule,
   ],
   controllers: [AppController],
   providers: [

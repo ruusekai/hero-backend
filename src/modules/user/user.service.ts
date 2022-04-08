@@ -10,6 +10,8 @@ import { UserCouponRepository } from '../../database/mysql/repositories/user.cou
 import { UserCouponStatus } from './enum/user.coupon.status';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
+import { UserBank } from '../../database/mysql/entities/user.bank.entity';
+import { UserBankRepository } from '../../database/mysql/repositories/user.bank.repository';
 
 @Injectable()
 export class UserService {
@@ -18,6 +20,7 @@ export class UserService {
     private readonly userKycRepository: UserKycRepository,
     private readonly userProfileRepository: UserProfileRepository,
     private readonly userCouponRepository: UserCouponRepository,
+    private readonly userBankRepository: UserBankRepository,
   ) {}
 
   private readonly logger = new Logger(UserService.name);
@@ -108,5 +111,25 @@ export class UserService {
       `coupon ${userCouponUuid} for user ${userUuid} successfully used`,
     );
     return entity;
+  }
+
+  async findOneUserBankByUserUuidOrderByUpdatedDateDesc(
+    userUuid: string,
+  ): Promise<UserBank> {
+    return await this.userBankRepository.findOneUserBankByUserUuidAndIsDeletedFalseOrderByUpdatedDateDesc(
+      userUuid,
+    );
+  }
+
+  async findOneApprovedUserBankByUserUuidOrderByUpdatedDateDesc(
+    userUuid: string,
+  ): Promise<UserBank> {
+    return await this.userBankRepository.findOneApprovedUserBankByUserUuidAndIsDeletedFalseOrderByUpdatedDateDesc(
+      userUuid,
+    );
+  }
+
+  async saveUserBank(userBank: UserBank): Promise<UserBank> {
+    return await this.userBankRepository.saveUserBank(userBank);
   }
 }

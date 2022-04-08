@@ -12,6 +12,7 @@ import { UserManager } from './user.manager';
 import { UserCreateKycApplicationReqDto } from './dto/request/user.create.kyc.application.req.dto';
 import { UserPatchUserReqDto } from './dto/request/user.patch.user.req.dto';
 import { UserCouponStatus } from './enum/user.coupon.status';
+import { UserCreateBankApplicationReqDto } from './dto/request/user.create.bank.application.req.dto';
 
 @Controller('/user')
 export class UserController {
@@ -73,5 +74,24 @@ export class UserController {
       req.user.uuid,
       status,
     );
+  }
+
+  @Post('/bank')
+  async createBankApplication(
+    @Request() req,
+    @Body() request: UserCreateBankApplicationReqDto,
+  ) {
+    return await this.userManager.createBankApplication(
+      req.user.uuid,
+      request.fullName,
+      request.bankingCardFileUuid,
+      request.bankCode,
+      request.bankNumber,
+    );
+  }
+
+  @Get('/bank')
+  async getLatestBankRecord(@Request() req) {
+    return await this.userManager.getLatestBankRecord(req.user.uuid);
   }
 }

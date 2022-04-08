@@ -16,6 +16,8 @@ import { UserCouponDto } from './dto/entity/user.coupon.dto';
 import { Coupon } from '../../database/mysql/entities/coupon.entity';
 import { FindAllUserCouponRspDto } from './dto/response/find.all.user.coupon.rsp.dto';
 import { UserCouponStatus } from './enum/user.coupon.status';
+import { UserBank } from '../../database/mysql/entities/user.bank.entity';
+import { UserBankRspDto } from './dto/response/user.bank.rsp.dto';
 
 @Injectable()
 export class UserManager {
@@ -63,10 +65,10 @@ export class UserManager {
     return new AppResponse(rsp);
   }
 
-  async getLatestKycRecord(useruuid: string): Promise<AppResponse> {
+  async getLatestKycRecord(userUuid: string): Promise<AppResponse> {
     const userKyc: UserKyc =
       await this.userService.findOneUserKycByUserUuidOrderByUpdatedDateDesc(
-        useruuid,
+        userUuid,
       );
     const rsp: UserKycRspDto = new UserKycRspDto(userKyc);
     return new AppResponse(rsp);
@@ -156,6 +158,48 @@ export class UserManager {
       },
     );
     const rsp = new FindAllUserCouponRspDto(userCouponDtoList);
+    return new AppResponse(rsp);
+  }
+
+  async createBankApplication(
+    userUuid: string,
+    fullName: string,
+    bankingCardFileUuid: string,
+    bankCode: string,
+    bankNumber: string,
+  ): Promise<AppResponse> {
+    //check if the latest bank application is PENDING, if so, throw error
+    const latestUserBankRecord: UserBank =
+      await this.userService.findOneUserBankByUserUuidOrderByUpdatedDateDesc(
+        userUuid,
+      );
+    if (
+      latestUserBankRecord != null &&
+      latestUserBankRecord.adminStatus !== AdminApprovalStatus.DECLINED &&
+      latestUserBankRecord.adminStatus !== AdminApprovalStatus.APPROVED
+    ) {
+      throw new ApiException(ResponseCode.STATUS_4007_KYC_ALREADY_COMPLETED);
+    }
+    //if no existing record, allow it to create bank application
+    let newUserBank: UserBank = new UserBank(
+      userUuid,
+      bankingCardFileUuid,
+      fullName,
+      bankCode,
+      bankNumber,
+      AdminApprovalStatus.PENDING,
+    );
+    newUserBank = await this.userService.saveUserBank(newUserBank);
+    const rsp: UserBankRspDto = new UserBankRspDto(newUserBank);
+    return new AppResponse(rsp);
+  }
+
+  async getLatestBankRecord(userUuid: string): Promise<AppResponse> {
+    const userBank: UserBank =
+      await this.userService.findOneUserBankByUserUuidOrderByUpdatedDateDesc(
+        userUuid,
+      );
+    const rsp: UserBankRspDto = new UserBankRspDto(userBank);
     return new AppResponse(rsp);
   }
 }

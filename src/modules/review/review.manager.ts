@@ -11,6 +11,8 @@ import { Review } from '../../database/mysql/entities/review.entity';
 import { CreateReviewRspDto } from './dto/response/create.review.rsp.dto';
 import { FindReviewAverageScoreRspDto } from './dto/response/find.review.average.score.rsp.dto';
 import { FindAllReviewRspDto } from './dto/response/find.all.review.rsp.dto';
+import { UserService } from '../user/user.service';
+import { User } from '../../database/mysql/entities/user.entity';
 
 @Injectable()
 export class ReviewManager {
@@ -19,6 +21,7 @@ export class ReviewManager {
   constructor(
     private readonly reviewService: ReviewService,
     private readonly matchingAttemptService: TaskMatchingAttemptService,
+    private readonly userService: UserService,
   ) {}
   async createTaskMatchingAttemptReview(
     userUuid: string,
@@ -117,12 +120,20 @@ export class ReviewManager {
   }
 
   async findReviewAverageScore(userUuid: string) {
+    const user: User = await this.userService.findOneUserByUuid(userUuid);
+    if (user == null) {
+      throw new ApiException(ResponseCode.STATUS_4003_USER_NOT_EXIST);
+    }
     const avgScore: number =
       await this.reviewService.avgReviewScoreByTargetUserUuid(userUuid);
     const rsp = new FindReviewAverageScoreRspDto(avgScore);
     return new AppResponse(rsp);
   }
   async findAllReviewWithTargetUserUuid(userUuid: string) {
+    const user: User = await this.userService.findOneUserByUuid(userUuid);
+    if (user == null) {
+      throw new ApiException(ResponseCode.STATUS_4003_USER_NOT_EXIST);
+    }
     const reviewList: Review[] =
       await this.reviewService.findReviewByTargetUserUuid(userUuid);
     const reviewDtoList: CreateReviewRspDto[] = reviewList.map((entity) => {

@@ -20,13 +20,13 @@ export class ReviewController {
     );
   }
 
-  @Get('score')
-  findReviewAverageScore(@Request() req) {
-    return this.reviewManager.findReviewAverageScore(req.user.uuid);
+  @Get('score/:userUuid')
+  findReviewAverageScore(@Request() req, @Param('userUuid') userUuid: string) {
+    return this.reviewManager.findReviewAverageScore(userUuid);
   }
 
-  @Get('history')
-  findAllReview(@Request() req) {
-    return this.reviewManager.findAllReviewWithTargetUserUuid(req.user.uuid);
+  @Get('history/:userUuid')
+  findAllReview(@Request() req, @Param('userUuid') userUuid: string) {
+    return this.reviewManager.findAllReviewWithTargetUserUuid(userUuid);
   }
 }

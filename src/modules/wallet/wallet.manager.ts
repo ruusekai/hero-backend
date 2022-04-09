@@ -9,7 +9,6 @@ import { WalletService } from './wallet.service';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
 import { HeroWalletWithdrawalRequest } from '../../database/mysql/entities/hero.wallet.withdrawal.request.entity';
-import { WithdrawalStatus } from './enum/withdrawal.status';
 import { HeroWalletWithdrawalRequestRepository } from '../../database/mysql/repositories/hero.wallet.withdrawal.request.repository';
 import { CreateHeroWalletWithdrawalRequestRspDto } from './dto/response/create.hero.wallet.withdrawal.request.rsp.dto';
 

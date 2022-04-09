@@ -1,5 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { TaskCategory } from '../../enum/task.category';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateTaskDto {
   // todo: change banner to isnotempty once images are ready

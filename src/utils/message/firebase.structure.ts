@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const structure = {
   users: {
     //userUUid
@@ -75,6 +76,7 @@ const structure = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const rules = {
   rules: {
     users: {

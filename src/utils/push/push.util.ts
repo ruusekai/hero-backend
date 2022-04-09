@@ -4,7 +4,6 @@ import { ResponseCode } from '../../common/response/response.code';
 import { ApiException } from '../../common/exception/api.exception';
 import { PushMessageDto } from './dto/entity/push-message-dto';
 import { lastValueFrom } from 'rxjs';
-import { PushLanding } from './enum/push-landing';
 import { HttpService } from '@nestjs/axios';
 
 @Injectable()

@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { ConfigService } from '@nestjs/config';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { ResponseCode } from '../../../common/response/response.code';
 import { ApiException } from '../../../common/exception/api.exception';
-import { Country } from '../entities/Country.entity';
+import { Country } from '../entities/country.entity';
 
 @EntityRepository(Country)
 @Injectable()

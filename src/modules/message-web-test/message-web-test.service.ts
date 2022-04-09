@@ -4,7 +4,7 @@ import { UpdateMessageWebTestDto } from './dto/update-message-web-test.dto';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken } from 'firebase/auth';
-import { getDatabase, ref, child, get } from 'firebase/database';
+import { child, get, getDatabase, ref } from 'firebase/database';
 
 @Injectable()
 export class MessageWebTestService {

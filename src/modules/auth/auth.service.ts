@@ -23,7 +23,6 @@ import { FacebookMeRspDto } from '../../utils/facebook-auth/dto/response/faceboo
 import { UserOauthFacebook } from '../../database/mysql/entities/user.oauth.facebook.entity';
 import { UserSmsTokenRepository } from '../../database/mysql/repositories/user.sms.token.repository';
 import { UserSmsToken } from '../../database/mysql/entities/user.sms.token.entity';
-import { AppResponse } from '../../common/response/app.response';
 import { UserInfoRspDto } from '../user/dto/response/user.info.rsp.dto';
 
 @Injectable()

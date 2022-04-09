@@ -1,17 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Request,
-} from '@nestjs/common';
+import { Body, Controller, Post, Request } from '@nestjs/common';
 import { PushManager } from './push.manager';
 import { PushService } from './push.service';
 import { CreatePushDto } from './dto/request/create-push.dto';
-import { UpdatePushDto } from './dto/request/update-push.dto';
 import { PushRegisterAudienceReqDto } from './dto/request/push-register-audience-req-dto';
 
 @Controller('push')

@@ -4,6 +4,6 @@ import { MessageWebTestController } from './message-web-test.controller';
 
 @Module({
   controllers: [MessageWebTestController],
-  providers: [MessageWebTestService]
+  providers: [MessageWebTestService],
 })
 export class MessageWebTestModule {}

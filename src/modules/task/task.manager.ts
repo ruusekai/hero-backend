@@ -170,8 +170,28 @@ export class TaskManager {
     return new AppResponse(rsp);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(taskUuid: string) {
+    const taskEntity: Task = await this.taskService.findOneTaskByUuid(taskUuid);
+    const taskDto: TaskDto = new TaskDto(
+      taskEntity.uuid,
+      taskEntity.bossUserUuid,
+      taskEntity.category,
+      taskEntity.banner,
+      taskEntity.title,
+      taskEntity.basicCostAmt,
+      taskEntity.heroRewardAmt,
+      taskEntity.serviceChargeAmt,
+      taskEntity.totalChargeAmt,
+      taskEntity.expiryDate,
+      taskEntity.description,
+      taskEntity.regionId,
+      taskEntity.districtId,
+      taskEntity.address,
+      taskEntity.latitude,
+      taskEntity.longitude,
+    );
+
+    return new AppResponse(taskDto);
   }
 
   async cancelTaskByBoss(userUuid: string, taskUuid: string) {

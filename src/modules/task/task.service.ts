@@ -6,18 +6,10 @@ import { TaskRepository } from '../../database/mysql/repositories/task.repositor
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { TaskPaymentStatus } from './enum/task.payment.status';
-import { MessageService } from '../message/message.service';
-import { PushService } from '../push/push.service';
-import { TaskMatchingAttemptService } from '../task-matching-attempt/task-matching-attempt.service';
 
 @Injectable()
 export class TaskService {
-  constructor(
-    private readonly taskRepository: TaskRepository,
-    private readonly messageService: MessageService,
-    private readonly pushService: PushService,
-    private readonly matchingAttemptService: TaskMatchingAttemptService,
-  ) {}
+  constructor(private readonly taskRepository: TaskRepository) {}
   async create(
     bossUserUuid: string,
     createTaskDto: CreateTaskDto,
@@ -62,14 +54,6 @@ export class TaskService {
     );
   }
 
-  findAll() {
-    return `This action returns all task`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} task`;
-  }
-
   async saveTask(task: Task): Promise<Task> {
     return await this.taskRepository.saveTask(task);
   }
@@ -89,7 +73,6 @@ export class TaskService {
       taskUuid,
     );
   }
-
   async findTaskByHeroUserUuid(heroUserUuid: string): Promise<Task[]> {
     return await this.taskRepository.findTaskByHeroUserUuid(heroUserUuid);
   }

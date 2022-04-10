@@ -26,6 +26,11 @@ export class TaskController {
     return this.taskManager.findAllWithQueryOptions(findTaskReqDto);
   }
 
+  @Get(':taskUuid')
+  findOne(@Param('taskUuid') taskUuid: string) {
+    return this.taskManager.findOne(taskUuid);
+  }
+
   @Post(':taskUuid/re-post')
   repostTaskByBoss(@Request() req, @Param('taskUuid') taskUuid: string) {
     return this.taskManager.repostTaskByBoss(req.user.uuid, taskUuid);

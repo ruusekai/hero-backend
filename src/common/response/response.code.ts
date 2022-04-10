@@ -189,6 +189,19 @@ export class ResponseCode {
     'TASK_ALREADY_MATCHED',
   );
 
+  public static readonly STATUS_7014_TASK_NOT_APPROVED_BY_ADMIN =
+    new ResponseStatus(
+      7014,
+      'TASK_NOT_APPROVED_BY_ADMIN',
+      'TASK_NOT_APPROVED_BY_ADMIN',
+    );
+
+  public static readonly STATUS_7015_TASK_NOT_PAID = new ResponseStatus(
+    7015,
+    'TASK_NOT_PAID',
+    'TASK_NOT_PAID',
+  );
+
   public static readonly STATUS_7100_ALREADY_REVIEWED = new ResponseStatus(
     7100,
     'ALREADY_REVIEWED',

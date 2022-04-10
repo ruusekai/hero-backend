@@ -45,10 +45,10 @@ export class ReviewRepository extends Repository<Review> {
     }
   }
 
-  async findOneReviewByUuid(userUuid: string): Promise<Review> {
+  async findOneReviewByUuid(uuid: string): Promise<Review> {
     try {
       return await this.findOne({
-        where: { userUuid: userUuid, isDeleted: false },
+        where: { uuid: uuid, isDeleted: false },
       });
     } catch (e) {
       console.log(JSON.stringify(e.stack));

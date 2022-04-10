@@ -528,7 +528,7 @@ export class TaskMatchingAttemptManager {
       );
     }
     this.logger.log(
-      `[bossRejectDone] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
+      `[heroCancelMessageGroup] matchingAttemptId: ${matchingAttempt.messageGroupId}, currentMatchingStatus: ${currentMatchingStatus}, newMatchingStatus: ${newMatchingStatus}`,
     );
 
     //2. save the attempt and close this chatroom

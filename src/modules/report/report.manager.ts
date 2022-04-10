@@ -28,7 +28,7 @@ export class ReportManager {
     const task: Task = await this.taskService.findOneTaskByUuid(taskUuid);
     if (task == null) {
       throw new ApiException(ResponseCode.STATUS_7010_TASK_NOT_EXIST);
-    } else if (task.bossUserUuid) {
+    } else if (task.bossUserUuid === userUuid) {
       throw new ApiException(ResponseCode.STATUS_8200_SELF_REPORT_NOT_ALLOWED);
     }
     let report: Report = new Report(
@@ -52,7 +52,7 @@ export class ReportManager {
     if (review == null) {
       this.logger.error(`review uuid not found: ${reviewUuid}`);
       throw new ApiException(ResponseCode.STATUS_9999_SYSTEM_ERROR);
-    } else if (review.fromUserUuid) {
+    } else if (review.fromUserUuid === userUuid) {
       throw new ApiException(ResponseCode.STATUS_8200_SELF_REPORT_NOT_ALLOWED);
     }
     let report: Report = new Report(

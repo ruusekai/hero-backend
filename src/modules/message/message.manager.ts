@@ -48,7 +48,7 @@ export class MessageManager {
       throw new ApiException(ResponseCode.STATUS_4013_FORBIDDEN);
     } else if (task.adminStatus !== AdminApprovalStatus.APPROVED) {
       throw new ApiException(
-        ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
+        ResponseCode.STATUS_7014_TASK_NOT_APPROVED_BY_ADMIN,
       );
     } else if (
       !(
@@ -56,9 +56,7 @@ export class MessageManager {
         task.paymentStatus === TaskPaymentStatus.SUCCEEDED
       )
     ) {
-      throw new ApiException(
-        ResponseCode.STATUS_7012_INVALID_TASK_MATCHING_ATTEMPT_ACTION,
-      );
+      throw new ApiException(ResponseCode.STATUS_7015_TASK_NOT_PAID);
     } else if (task.heroUserUuid != null) {
       throw new ApiException(ResponseCode.STATUS_7013_TASK_ALREADY_MATCHED);
     }

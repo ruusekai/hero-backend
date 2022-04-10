@@ -1,4 +1,4 @@
 export enum ReportType {
-  TASK = 'type',
+  TASK = 'task',
   REVIEW = 'review',
 }

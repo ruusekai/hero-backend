@@ -71,4 +71,11 @@ export default () => ({
     ONE_SIGNAL_APP_ID: process.env.ONE_SIGNAL_APP_ID,
     ONE_SIGNAL_APP_KEY: process.env.ONE_SIGNAL_APP_KEY,
   },
+  email: {
+    POSTMARK_ENDPOINT: process.env.POSTMARK_ENDPOINT,
+    POSTMARK_HEADER_SERVER_TOKEN: process.env.POSTMARK_HEADER_SERVER_TOKEN,
+    SEND_FROM_EMAIL: process.env.SEND_FROM_EMAIL,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    CMS_ACTION_URL: process.env.EMAIL_CMS_ACTION_URL,
+  },
 });

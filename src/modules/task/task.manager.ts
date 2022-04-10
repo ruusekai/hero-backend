@@ -26,6 +26,7 @@ import { TaskMatchingAttemptRspDto } from '../task-matching-attempt/dto/entity/t
 import { TaskWithMatchingAttemptDto } from './dto/entity/task.with.matching.attempt.dto';
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
 import { TaskDetailDto } from './dto/entity/task.detail.dto';
+import { EmailUtil } from '../../utils/email/email.util';
 
 @Injectable()
 export class TaskManager {
@@ -35,6 +36,7 @@ export class TaskManager {
     private readonly paymentUtil: PaymentUtil,
     private readonly matchingAttemptService: TaskMatchingAttemptService,
     private readonly paymentService: PaymentService,
+    private readonly emailUtil: EmailUtil,
   ) {}
 
   private readonly logger = new Logger(TaskManager.name);
@@ -64,6 +66,7 @@ export class TaskManager {
     );
     await this.matchingAttemptService.saveTaskHistory(historyEntity);
 
+    await this.emailUtil.sendTemplateForNewTaskToAdmin(rsp);
     return new AppResponse(rsp);
   }
 

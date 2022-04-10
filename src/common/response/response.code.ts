@@ -268,6 +268,12 @@ export class ResponseCode {
       'SELF_REPORT_NOT_ALLOWED ',
       'SELF_REPORT_NOT_ALLOWED',
     );
+
+  public static readonly STATUS_8300_EMAIL_ERROR = new ResponseStatus(
+    8300,
+    'email error',
+    'email error',
+  );
   //system error
   public static readonly STATUS_9999_SYSTEM_ERROR = new ResponseStatus(
     9999,

@@ -10,6 +10,7 @@ import { MessageModule } from '../message/message.module';
 import { PushModule } from '../push/push.module';
 import { TaskMatchingAttemptModule } from '../task-matching-attempt/task-matching-attempt.module';
 import { PaymentModule } from '../payment/payment.module';
+import { EmailUtilModule } from '../../utils/email/email.util.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PaymentModule } from '../payment/payment.module';
     PushModule,
     TaskMatchingAttemptModule,
     PaymentModule,
+    EmailUtilModule,
   ],
   controllers: [TaskController],
   providers: [TaskManager, TaskService],

@@ -10,6 +10,7 @@ import { PushNotificationRepository } from '../../database/mysql/repositories/pu
 import { PushTemplateName } from '../../common/enum/push.template.name';
 import { PushTemplateRepository } from '../../database/mysql/repositories/push.template.repository';
 import { PushTemplate } from '../../database/mysql/entities/push.template.entity';
+import { ViewDeviceRspDto } from '../../utils/push/dto/response/view-device-rsp-dto';
 
 @Injectable()
 export class PushService {
@@ -129,7 +130,7 @@ export class PushService {
     return await this.pushNotificationRepository.savePushNotification(entity);
   }
 
-  async viewDeviceOnOneSignal(playerId: string) {
+  async viewDeviceOnOneSignal(playerId: string): Promise<ViewDeviceRspDto> {
     return await this.pushUtil.viewDevice(playerId);
   }
 

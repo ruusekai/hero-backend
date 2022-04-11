@@ -6,6 +6,7 @@ import { AppResponse } from '../../common/response/app.response';
 import { PushRegisterAudienceRspDto } from './dto/response/push-register-audience-rsp-dto';
 import { ApiException } from '../../common/exception/api.exception';
 import { ResponseCode } from '../../common/response/response.code';
+import { ViewDeviceRspDto } from '../../utils/push/dto/response/view-device-rsp-dto';
 
 @Injectable()
 export class PushManager {
@@ -36,10 +37,12 @@ export class PushManager {
       );
     }
     //check the playerId on onesignal
-    const oneSignalRsp: any = await this.pushService.viewDeviceOnOneSignal(
-      playerId,
-    );
-    if (oneSignalRsp == null) {
+    const oneSignalRsp: ViewDeviceRspDto =
+      await this.pushService.viewDeviceOnOneSignal(playerId);
+    if (
+      oneSignalRsp == null ||
+      (oneSignalRsp.errors != null && oneSignalRsp.errors.length > 0)
+    ) {
       throw new ApiException(ResponseCode.STATUS_8100_ONE_SIGNAL_ERROR);
     }
 

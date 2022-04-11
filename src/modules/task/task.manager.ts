@@ -132,6 +132,7 @@ export class TaskManager {
           limit: findTaskReqDto.limit,
         },
       );
+    this.logger.log('response' + JSON.stringify(response));
     const taskDtoList: TaskDto[] = await Promise.all(
       response.items.map(async (taskRawData) => {
         const taskDto: TaskDto = new TaskDto(

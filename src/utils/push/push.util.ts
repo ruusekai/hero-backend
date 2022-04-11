@@ -5,6 +5,7 @@ import { ApiException } from '../../common/exception/api.exception';
 import { PushMessageDto } from './dto/entity/push-message-dto';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import { ViewDeviceRspDto } from './dto/response/view-device-rsp-dto';
 
 @Injectable()
 export class PushUtil {
@@ -51,7 +52,7 @@ export class PushUtil {
     }
   }
 
-  async viewDevice(playerId: string) {
+  async viewDevice(playerId: string): Promise<ViewDeviceRspDto> {
     try {
       const axiosConfig: any = {
         baseURL: this.endpoint,

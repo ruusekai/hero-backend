@@ -18,4 +18,8 @@ export class AppResponse {
   get getStatus(): ApiStatus {
     return this.status;
   }
+
+  get getData() {
+    return this.data;
+  }
 }

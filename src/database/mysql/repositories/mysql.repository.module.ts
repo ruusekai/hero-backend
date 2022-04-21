@@ -29,6 +29,7 @@ import { ReportRepository } from './report.repository';
 import { HeroWalletWithdrawalRequestRepository } from './hero.wallet.withdrawal.request.repository';
 import { BankRepository } from './bank.repository';
 import { UserBankRepository } from './user.bank.repository';
+import { AdminPinnedTaskRepository } from './admin.pinned.task.repository';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { UserBankRepository } from './user.bank.repository';
       ReportRepository,
       BankRepository,
       UserBankRepository,
+      AdminPinnedTaskRepository,
     ]),
   ],
   providers: [],

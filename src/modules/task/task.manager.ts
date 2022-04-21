@@ -27,6 +27,7 @@ import { TaskWithMatchingAttemptDto } from './dto/entity/task.with.matching.atte
 import { AdminApprovalStatus } from '../../common/enum/admin.approval.status';
 import { TaskDetailDto } from './dto/entity/task.detail.dto';
 import { EmailUtil } from '../../utils/email/email.util';
+import { AdminPinnedTask } from '../../database/mysql/entities/admin.pinned.task.entity';
 
 @Injectable()
 export class TaskManager {
@@ -393,6 +394,39 @@ export class TaskManager {
 
     newTask = await this.taskService.saveTask(newTask);
     const rsp = new TaskDetailDto(newTask);
+    return new AppResponse(rsp);
+  }
+
+  async listAdminPinnedTask() {
+    const adminPinnedTaskList: AdminPinnedTask[] =
+      await this.taskService.findAllAdminPinnedTaskList();
+
+    const rsp: TaskWithMatchingAttemptDto[] = await Promise.all(
+      adminPinnedTaskList.map(async (entity) => {
+        //get matching entity list
+        const matchingAttemptList: TaskMatchingAttempt[] =
+          await this.matchingAttemptService.findTaskMatchingAttemptListByTaskUuid(
+            entity?.task?.uuid,
+          );
+        //get matching dto list
+        const matchingAttemptDtoList: TaskMatchingAttemptRspDto[] =
+          matchingAttemptList.map((subEntity) => {
+            return new TaskMatchingAttemptRspDto(subEntity);
+          });
+        //get name of the matched one
+        let matchedAttemptDto: TaskMatchingAttemptRspDto = null;
+        if (entity?.task?.messageGroupId != null) {
+          matchedAttemptDto = matchingAttemptDtoList.filter(
+            (dto) => dto.messageGroupId === entity?.task?.messageGroupId,
+          )[0];
+        }
+        return new TaskWithMatchingAttemptDto(
+          entity?.task,
+          matchedAttemptDto,
+          matchingAttemptDtoList,
+        );
+      }),
+    );
     return new AppResponse(rsp);
   }
 }

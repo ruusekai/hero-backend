@@ -1,4 +1,3 @@
-
 create table if not exists task
 (
     id int auto_increment
@@ -202,4 +201,22 @@ create table if not exists user_coupon
     foreign key (coupon_code) references coupon (code),
     constraint user_coupon_uuid_uindex
     unique (uuid)
+);
+
+
+
+create table if not exists admin_pinned_task
+(
+    id int auto_increment
+    primary key,
+    task_uuid varchar(255) not null,
+    seq int not null,
+    is_deleted int default 0 not null,
+    version int default 1 not null,
+    created_date timestamp default CURRENT_TIMESTAMP not null,
+    updated_date timestamp default CURRENT_TIMESTAMP not null,
+    created_by int default 0 not null,
+    updated_by int default 0 not null,
+    constraint admin_pinned_task_task_uuid_fk
+    foreign key (task_uuid) references task (uuid)
 );

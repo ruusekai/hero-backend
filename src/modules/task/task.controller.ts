@@ -26,6 +26,21 @@ export class TaskController {
     return this.taskManager.findAllWithQueryOptions(findTaskReqDto);
   }
 
+  @Get('/hero')
+  listUserHeroTask(@Request() req) {
+    return this.taskManager.listUserHeroTask(req.user.uuid);
+  }
+
+  @Get('/boss')
+  listUserBossTask(@Request() req) {
+    return this.taskManager.listUserBossTask(req.user.uuid);
+  }
+
+  @Get('/admin-pinned')
+  listAdminPinnedTask() {
+    return this.taskManager.listAdminPinnedTask();
+  }
+
   @Get(':taskUuid')
   findOne(@Param('taskUuid') taskUuid: string) {
     return this.taskManager.findOne(taskUuid);
@@ -39,15 +54,5 @@ export class TaskController {
   @Delete(':taskUuid')
   cancelTaskByBoss(@Request() req, @Param('taskUuid') taskUuid: string) {
     return this.taskManager.cancelTaskByBoss(req.user.uuid, taskUuid);
-  }
-
-  @Get('/hero')
-  listUserHeroTask(@Request() req) {
-    return this.taskManager.listUserHeroTask(req.user.uuid);
-  }
-
-  @Get('/boss')
-  listUserBossTask(@Request() req) {
-    return this.taskManager.listUserBossTask(req.user.uuid);
   }
 }
